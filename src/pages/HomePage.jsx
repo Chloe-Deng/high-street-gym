@@ -1,0 +1,31 @@
+import Button from "../ui/Button";
+import PageNav from "../ui/PageNav";
+
+function HomePage() {
+  return (
+    <main className="bg-image-with-gradient m-5 h-screen  px-4 py-2">
+      <PageNav />
+
+      <section className="item-center flex h-[85%] flex-col justify-center gap-4 text-center">
+        <h1 className="text-[1.4rem] text-zinc-50">
+          You could be powerful.
+          <br />
+          High Street Gym keeps boost of your body.
+        </h1>
+        <h2 className="text-l mb-4 text-zinc-50">
+          Elevate your fitness in a space where each workout turns potential
+          into progress. Join us on the path to peak power.
+          <br />
+          Ready, set, thrive!
+        </h2>
+        <div>
+          <Button to="/classes" type="primary">
+            Start booking
+          </Button>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default HomePage;

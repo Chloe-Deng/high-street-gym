@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE class-upload [
+    <!ELEMENT class-upload (classes)>
+    <!ATTLIST class-upload operation (insert|update) "insert">
+    <!ELEMENT classes (class+)>
+    <!ELEMENT class (id?, name, duration, description, date, startTime, trainer)>
+    <!ELEMENT id (#PCDATA)>
+    <!ELEMENT name (#PCDATA)>
+    <!ELEMENT date (#PCDATA)>
+    <!ELEMENT duration (#PCDATA)>
+    <!ELEMENT startTime (#PCDATA)>
+    <!ELEMENT trainer (#PCDATA)>  
+    <!ELEMENT description (#PCDATA)>  
+]>
+<class-upload operation="insert">
+    <classes>
+        <!-- <class>
+            <name>Yoga Class</name>
+            <startTime>09:00:00</startTime>
+            <duration>60</duration>
+            <date>2024-03-05</date>
+            <trainer>John Doe</trainer>
+            <description>A good exercise</description>
+        </class>
+        <class>
+            <name>Zumba Fitness</name>
+            <startTime>06:00:00</startTime>
+            <duration>45</duration>
+            <date>2024-03-05</date>
+            <trainer>Paul Smith</trainer>
+            <description>A good exercise</description>
+        </class>  -->
+        <!-- <class>
+            <name>HIIT</name>
+            <startTime>07:00:00</startTime>
+            <duration>60</duration>
+            <date>2024-03-06</date>
+            <trainer>Harry</trainer>
+            <description>A good exercise</description>
+        </class>  -->
+        <class>
+            <name>HIIT</name>
+            <date>2024-03-07</date>
+            <duration>60</duration>
+            <startTime>07:00:00</startTime>
+            <trainer>Harry</trainer>
+            <description>A good exercise</description>
+        </class> 
+    </classes>
+</class-upload>
+
+<!-- <class-upload operation="update">
+    <classes>       
+        <class>
+            <id>1</id>
+            <name>Yoga</name>
+            <startTime>08:00:00</startTime>
+            <duration>60</duration>            
+        </class>       
+    </classes>
+</class-upload> -->
