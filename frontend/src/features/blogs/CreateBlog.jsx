@@ -32,7 +32,7 @@ function CreateBlog() {
             Title
           </label>
           <input
-            className="w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
+            className="input-square"
             type="text"
             id="title"
             disabled={isCreating}
@@ -45,7 +45,7 @@ function CreateBlog() {
         <div className="flex flex-col gap-0.5">
           <label htmlFor="content">Content</label>
           <textarea
-            className="w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
+            className="input-square"
             required
             rows="10"
             type="text"
@@ -60,7 +60,7 @@ function CreateBlog() {
         <div className="flex flex-col gap-0.5">
           <label htmlFor="author">Author</label>
           <input
-            className="w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
+            className="input-square"
             type="text"
             id="author"
             disabled={isCreating}
@@ -70,11 +70,11 @@ function CreateBlog() {
           />
         </div>
         <div className="mt-6 flex justify-center space-x-2">
-          <Button type="secondary" to="/blog">
-            Back
-          </Button>
           <Button type="primary" disabled={isCreating}>
             Create Post
+          </Button>
+          <Button type="secondary" to="/blog">
+            Back
           </Button>
         </div>
       </form>

@@ -7,6 +7,10 @@
     @apply rounded-full border border-zinc-200 px-4 py-2 text-sm transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400 md:px-6 md:py-3;
   }
 
+  .input-square {
+    @apply w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400;
+  }
+
   .custom-file-selector {
     &::file-selector-button {
       @apply mr-4 cursor-pointer rounded border-none bg-zinc-300 px-4 py-2 font-semibold transition-all duration-300 hover:bg-zinc-200;
