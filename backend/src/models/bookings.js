@@ -21,7 +21,7 @@ export class Booking {
 export async function getBookings() {
   const query = `SELECT 
   b.id AS booking_id,
-  c.class_name,
+  act.activity_name,
   CONCAT(tr.first_name, ' ', tr.last_name) AS trainer_name,  
   l.location_name,
   b.create_at AS booking_time,
@@ -31,6 +31,7 @@ FROM
   INNER JOIN classes c ON b.class_id = c.id
   INNER JOIN users u ON b.user_id = u.id
   INNER JOIN locations l ON c.location_id = l.id
+  INNER JOIN activities act ON act.activity_id = c.activity_id
   INNER JOIN users tr ON c.trainer_id = tr.id;`;
 
   try {
@@ -39,7 +40,7 @@ FROM
       (b) =>
         new Booking(
           b.booking_id,
-          b.class_name,
+          b.activity_name,
           b.trainer_name,
           b.location_name,
           b.booking_time,
@@ -83,12 +84,20 @@ FROM
 // }
 
 // Helper functions to find IDs by names
-async function findClassIdByName(className) {
-  const [classes] = await db.query(
-    "SELECT id FROM classes WHERE class_name = ?",
-    [className],
+// async function findClassIdByName(className) {
+//   const [classes] = await db.query(
+//     "SELECT id FROM classes WHERE class_name = ?",
+//     [className],
+//   );
+//   return classes[0]?.id;
+// }
+
+async function findActivityIdByName(activityName) {
+  const [activities] = await db.query(
+    "SELECT activity_id FROM activities WHERE activity_name = ?",
+    [activityName],
   );
-  return classes[0]?.id;
+  return activities[0]?.activity_id;
 }
 
 async function findUserIdByName(userName) {
@@ -115,6 +124,73 @@ async function findTrainerIdByName(trainerName) {
   return trainers[0]?.id;
 }
 
+export async function createBooking(newBooking) {
+  try {
+    const {
+      activityName,
+      userName,
+      locationName,
+      trainerName,
+      startDate, // 前端传来的上课时间
+      startTime, // 前端传来的上课开始时间
+    } = newBooking;
+
+    // 查找相关ID
+    const activityId = await findActivityIdByName(activityName);
+    const userId = await findUserIdByName(userName);
+    const locationId = await findLocationIdByName(locationName);
+    const trainerId = await findTrainerIdByName(trainerName);
+
+    console.log(`Class ID: ${activityId}`);
+    console.log(`User ID: ${userId}`);
+    console.log(`Location ID: ${locationId}`);
+    console.log(`Trainer ID: ${trainerId}`);
+
+    // 检查ID是否都找到了
+    if (!activityId || !userId || !locationId || !trainerId) {
+      throw new Error("One or more details are incorrect or missing");
+    }
+
+    // 找到特定时间和地点的课程实例
+    const [classInstances] = await db.query(
+      `SELECT id FROM classes
+       WHERE activity_id = ? AND datetime = ? AND start_at = ? AND location_id = ? AND trainer_id = ?`,
+      [activityId, startDate, startTime, locationId, trainerId],
+    );
+
+    if (classInstances.length === 0) {
+      throw new Error("This trainer does not teach this class");
+    }
+
+    const classId = classInstances[0]?.id;
+    if (!classId) {
+      throw new Error("No class instance found for the provided details");
+    }
+
+    // 创建预订
+    const [result] = await db.query(
+      "INSERT INTO bookings (class_id, user_id, location_id) VALUES (?, ?, ?)",
+      [classId, userId, locationId],
+    );
+
+    // 构造并返回成功响应
+    return {
+      bookingId: result.insertId,
+      bookingTime: new Date().toISOString(), // 创建预订的时间
+      activityName,
+      userName,
+      locationName,
+      trainerName,
+      startDate,
+      startTime,
+    };
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    throw error;
+  }
+}
+
+/*
 export async function createBooking(newBooking) {
   try {
     const { className, userName, locationName, trainerName } = newBooking;
@@ -169,41 +245,7 @@ export async function createBooking(newBooking) {
     throw error;
   }
 }
-
-// Function to create a new booking
-// export async function createBooking(newBooking) {
-//   try {
-//     const { className, userName, locationName, trainerName } = newBooking;
-
-//     // 查找相关ID
-//     const classId = await findClassIdByName(className);
-//     const userId = await findUserIdByName(userName);
-//     const locationId = await findLocationIdByName(locationName);
-//     // const trainerId = await findTrainerIdByName(trainerName); // 获取教练ID
-
-//     // 验证所有ID都已找到
-//     if (!classId || !userId || !locationId) {
-//       throw new Error("One or more details are incorrect or missing");
-//     }
-
-//     // 执行数据库插入操作
-//     const [result] = await db.query(
-//       "INSERT INTO bookings (class_id, user_id, location_id) VALUES (?, ?, ?, ?)",
-//       [classId, userId, locationId],
-//     );
-
-//     // 构造并返回成功响应
-//     return {
-//       bookingId: result.insertId,
-//       bookingTime: new Date().toISOString(),
-//       ...newBooking,
-//     };
-//   } catch (error) {
-//     console.error("Error creating booking:", error);
-//     // 将错误抛出，让调用者处理（例如，发送HTTP错误响应）
-//     throw error;
-//   }
-// }
+*/
 
 // Function to delete a booking
 export async function deleteBooking(bookingId) {

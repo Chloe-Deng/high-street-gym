@@ -104,54 +104,6 @@ export async function createClass(newClass) {
   }
 }
 
-// export async function update(classInfo) {
-//   return db.query(
-//     "UPDATE classes SET class_name = ?, datetime = ?, start_at = ?, duration = ?, description = ?, location_id = ?, trainer_id = ? WHERE id = ?",
-//     [
-//       classInfo.className,
-//       classInfo.datetime,
-//       classInfo.startAt,
-//       classInfo.duration,
-//       classInfo.description,
-//       classInfo.locationID,
-//       classInfo.trainerID,
-//       classInfo.id,
-//     ],
-//   );
-// }
-
-export async function updateById(classId, classInfo) {
-  // 过滤掉 id 和任何不应直接更新的字段
-  const { id, ...fieldsToUpdate } = classInfo;
-
-  // 构建 SQL 语句的 SET 部分
-  const setSql = Object.keys(fieldsToUpdate)
-    .map((key, index) => `${key} = ?`)
-    .join(", ");
-
-  // 准备 SQL 语句的参数值
-  const values = Object.values(fieldsToUpdate);
-
-  // 确保 id 作为最后一个参数传递给 WHERE 子句
-  values.push(classId);
-
-  if (!setSql.length) {
-    throw new Error("No fields provided for update");
-  }
-
-  const sql = `UPDATE classes SET ${setSql} WHERE id = ?`;
-
-  try {
-    const [result] = await db.query(sql, values);
-    if (result.affectedRows === 0) {
-      throw new Error("Class not found or no fields updated");
-    }
-    return result;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function deleteByID(classID) {
   return db.query("DELETE FROM classes WHERE id = ?", classID);
 }

@@ -37,12 +37,13 @@ function UploadXML() {
         // 提取解析后的 JavaScript 对象
         const classes = result["class-upload"].classes[0].class.map(
           (classData) => ({
-            name: classData.className[0],
-            duration: classData.duration[0],
-            description: classData.description[0],
-            date: classData.datetime[0],
-            startTime: classData.startAt[0],
-            trainerID: classData.trainerID[0],
+            activityName: classData.activityName[0],
+            startDate: classData.startDate[0],
+            startTime: classData.startTime[0],
+            locationName: classData.locationName[0],
+            trainerName: classData.trainerName[0],
+            activityDuration: parseInt(classData.activityDuration[0], 10), // 将字符串转换为整数
+            activityDescription: classData.activityDescription[0],
           }),
         );
 

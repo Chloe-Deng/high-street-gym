@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import LinkButton from "../../ui/LinkButton";
 import { useParams } from "react-router-dom";
 
@@ -26,7 +25,7 @@ function Class() {
 
   if (isLoading || !classData) return <Loader />;
 
-  const { className, datetime } = classData;
+  const { activityName, startDate, startTime } = classData;
 
   return (
     <div className="mt-5">
@@ -35,8 +34,9 @@ function Class() {
       <div className="mt-10 flex flex-col text-center">
         <h1>Create Booking</h1>
         <form action="">
-          <h1 className="mt-5 text-xl font-semibold">{className}</h1>
-          <p className="text-m mb-3 mt-5">{datetime}</p>
+          <h1 className="mt-5 text-xl font-semibold">{activityName}</h1>
+          <p className="text-m mb-3 mt-5">{startDate}</p>
+          <p className="text-m mb-3 mt-5">{startTime}</p>
           <Button type="primary">Book</Button>
         </form>
       </div>

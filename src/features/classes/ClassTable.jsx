@@ -8,12 +8,12 @@ function ClassTable() {
   // Since fetch the data from the data base is an async process, so we need to check if the data is already arrived or not
   const sortedClasses = classes
     ?.slice()
-    .sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
   const groupedClasses = {};
 
   const courses = sortedClasses?.reduce((acc, el) => {
-    const date = new Date(el.datetime).toLocaleDateString();
+    const date = new Date(el.startDate).toLocaleDateString();
 
     // if (!acc[date]) {
     //   acc[date] = [];
@@ -51,7 +51,7 @@ function ClassTable() {
 
           <ul className="py-2">
             {classes.map((course) => (
-              <ClassItem course={course} key={course.id} />
+              <ClassItem course={course} key={course.classId} />
             ))}
           </ul>
         </div>

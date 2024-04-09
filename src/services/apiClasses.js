@@ -1,20 +1,20 @@
 import { API_URL } from "./apiURL";
 
+// export async function getClasses() {
+//   // GET from the API /animals
+//   const res = await fetch(API_URL + "/classes", {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+
+//   const { data } = await res.json();
+
+//   return data;
+// }
+
 export async function getClasses() {
-  // GET from the API /animals
-  const res = await fetch(API_URL + "/classes", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  const { data } = await res.json();
-
-  return data;
-}
-
-export async function getClassDetails() {
   // GET from the API /animals
   const res = await fetch(API_URL + "/classes/details", {
     method: "GET",

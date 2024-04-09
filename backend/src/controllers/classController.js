@@ -21,6 +21,7 @@ classController.get("/details", async (req, res) => {
   res.status(200).json({
     status: "Success",
     message: "Get all classes with trainers and locations",
+    result: classes.length,
     data: classes,
   });
 });
@@ -78,6 +79,43 @@ classController.post("/", async (req, res) => {
   // Get the class data out of the request
   const classData = req.body;
 
+  // Implement request validation
+  if (
+    !classData.activityName ||
+    !classData.startDate ||
+    !classData.startTime ||
+    !classData.locationName ||
+    !classData.trainerName
+  ) {
+    return res.status(400).json({
+      status: 400,
+      message: "Missing required class information",
+    });
+  }
+
+  try {
+    // Directly pass classData to createClass function
+    const createdClass = await ClassDetails.createClass(classData);
+
+    res.status(201).json({
+      status: 201,
+      message: "Created new class",
+      data: createdClass,
+    });
+  } catch (error) {
+    console.error("Failed to create new class:", error.message);
+    res.status(500).json({
+      status: 500,
+      message: "Failed to create new class: " + error.message,
+    });
+  }
+});
+
+/*
+classController.post("/", async (req, res) => {
+  // Get the class data out of the request
+  const classData = req.body;
+
   // TODO: Implement request validation
   // You should validate the incoming data before processing it.
   // Ensure required fields are present and have valid data.
@@ -114,6 +152,7 @@ classController.post("/", async (req, res) => {
     });
   }
 });
+*/
 
 // classController.patch("/:id", async (req, res) => {
 //   const classId = req.params.id;
@@ -156,7 +195,7 @@ classController.patch("/:id", async (req, res) => {
   }
 
   try {
-    await Classes.updateById(classId, updateData);
+    await ClassDetails.updateById(classId, updateData);
     // console.log(result);
     res.json({
       status: 200,
