@@ -37,7 +37,7 @@ function Class() {
           <h1 className="mt-5 text-xl font-semibold">{activityName}</h1>
           <p className="text-m mb-3 mt-5">{startDate}</p>
           <p className="text-m mb-3 mt-5">{startTime}</p>
-          <Button type="primary">Book</Button>
+          <Button variation="primary">Book</Button>
         </form>
       </div>
     </div>

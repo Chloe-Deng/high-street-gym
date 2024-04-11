@@ -1,9 +1,9 @@
-import AccountList from "../features/account/AccountList";
+import AccountItem from "../features/account/AccountItem";
 
 function Account() {
   return (
     <>
-      <AccountList />
+      <AccountItem />
     </>
   );
 }

@@ -14,7 +14,7 @@ function BlogList() {
         Blog
       </h2>
 
-      <Button type="small" to="/blog/new">
+      <Button variation="small" to="/blog/new">
         New post
       </Button>
 

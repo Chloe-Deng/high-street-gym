@@ -5,7 +5,7 @@ function DeleteItem({ bookingId }) {
   const { isDeleting, deleteBooking } = useDeleteBooking();
   return (
     <Button
-      type="small"
+      variation="small"
       onClick={() => deleteBooking(bookingId)}
       disabled={isDeleting}
     >

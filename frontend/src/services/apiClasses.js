@@ -42,13 +42,14 @@ export async function getClass(classID) {
   return data;
 }
 
-export async function createClass(newClass) {
+export async function createClass({ newClass, authenticationKey }) {
   try {
     const res = await fetch(`${API_URL}/classes`, {
       method: "POST",
       body: JSON.stringify(newClass),
       headers: {
         "Content-Type": "application/json",
+        "X-AUTH-KEY": authenticationKey,
       },
     });
 

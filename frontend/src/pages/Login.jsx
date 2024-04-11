@@ -1,4 +1,4 @@
-import LoginForm from "../features/members/LoginForm";
+import LoginForm from "../features/users/LoginForm";
 
 import Header from "../ui/Header";
 

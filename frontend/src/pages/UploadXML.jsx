@@ -4,11 +4,15 @@ import { useForm } from "react-hook-form";
 import xml2js from "xml2js";
 import toast from "react-hot-toast";
 import { createClass } from "../services/apiClasses";
+import { getStoredAuthKey } from "../utils/getStoredAuthKey";
 
 function UploadXML() {
   const { register, handleSubmit } = useForm();
 
   const queryClient = useQueryClient();
+
+  const authenticationKey = getStoredAuthKey();
+  console.log(authenticationKey);
 
   const { mutate, isLoading: isCreating } = useMutation({
     mutationFn: createClass,
@@ -51,7 +55,7 @@ function UploadXML() {
         // console.log(classes);
         // console.log(classes[0]);
 
-        mutate(classes[0]);
+        mutate({ newClass: classes[0], authenticationKey });
       });
     };
     reader.readAsText(file);
@@ -77,31 +81,12 @@ function UploadXML() {
         />
       </div>
       <div>
-        <Button type="primary" disabled={isCreating}>
+        <Button variation="primary" disabled={isCreating}>
           Upload
         </Button>
       </div>
     </form>
   );
 }
-
-// font-size: 1.4rem;
-//   border-radius: var(--border-radius-sm);
-
-//   &::file-selector-button {
-//     font: inherit;
-//     font-weight: 500;
-//     padding: 0.8rem 1.2rem;
-//     margin-right: 1.2rem;
-//     border-radius: var(--border-radius-sm);
-//     border: none;
-//     color: var(--color-brand-50);
-//     background-color: var(--color-brand-600);
-//     cursor: pointer;
-//     transition: color 0.2s, background-color 0.2s;
-
-//     &:hover {
-//       background-color: var(--color-brand-700);
-//     }
 
 export default UploadXML;

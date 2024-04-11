@@ -1,4 +1,4 @@
-import { db } from "../database.js";
+import { db } from '../database.js';
 
 // Post model constructor including the user's name
 export function Post(
@@ -6,7 +6,7 @@ export function Post(
   postAt,
   postTitle,
   postContent,
-  userName, // Assuming we are interested in the user's name
+  userName // Assuming we are interested in the user's name
 ) {
   return {
     id,
@@ -42,11 +42,11 @@ export async function getPosts(page = 1, limit = 1) {
           post.post_at,
           post.post_title,
           post.post_content,
-          post.userName,
-        ),
+          post.userName
+        )
     );
   } catch (error) {
-    console.error("Error fetching posts with user names:", error);
+    console.error('Error fetching posts with user names:', error);
     throw error;
   }
 }
@@ -58,11 +58,11 @@ export async function createPost(newPost) {
   try {
     // 首先，根据userName查找用户的ID
     const [users] = await db.query(
-      "SELECT id FROM users WHERE first_name = ?",
-      [userName],
+      'SELECT id FROM users WHERE first_name = ?',
+      [userName]
     );
     if (users.length === 0) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
     const userId = users[0].id;
 
@@ -86,7 +86,28 @@ export async function createPost(newPost) {
       userName,
     };
   } catch (error) {
-    console.error("Error creating new post:", error);
+    console.error('Error creating new post:', error);
+    throw error;
+  }
+}
+
+export async function deletePost(postId) {
+  try {
+    // First, attempt to delete the post by ID
+    const deleteQuery = `DELETE FROM posts WHERE id = ?`;
+    const [result] = await db.query(deleteQuery, [postId]);
+
+    // Check if the delete operation was successful
+    if (result.affectedRows === 0) {
+      throw new Error(
+        'No post found with the given ID, or it has already been deleted.'
+      );
+    }
+
+    // Return a success message
+    return { message: 'Post deleted successfully', postId };
+  } catch (error) {
+    console.error('Error deleting post:', error);
     throw error;
   }
 }

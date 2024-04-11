@@ -15,6 +15,8 @@ import { Toaster } from "react-hot-toast";
 import HomePage from "./pages/HomePage";
 import Class from "./features/classes/Class";
 import CreateBlog from "./features/blogs/CreateBlog";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 // Set up the cache, store the remote date in the cache so that we don't need to fetch the same data from the server every time
 const queryClient = new QueryClient({
@@ -28,49 +30,65 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<HomePage />} />
-          <Route element={<AppLayout />}>
-            <Route index element={<Navigate replace to="classes" />} />
-            <Route path="classes" element={<Classes />} />
-            <Route path="classes/:id" element={<Class />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="blog" element={<Blog />} />
-            <Route path="blog/new" element={<CreateBlog />} />
-            <Route path="upload_xml" element={<UploadXML />} />
-            <Route path="account" element={<Account />} />
-          </Route>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="login" element={<Login />} />
+            <Route path="sign_up" element={<SignUp />} />
 
-          <Route path="login" element={<Login />} />
-          <Route path="sign_up" element={<SignUp />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="classes" />} />
+              <Route path="classes" element={<Classes />} />
+              <Route path="classes/:id" element={<Class />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/new" element={<CreateBlog />} />
+              <Route
+                path="upload_xml"
+                element={
+                  <ProtectedRoute accessRoles={["admin", "trainer"]}>
+                    <UploadXML />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route path="account" element={<Account />} />
+            </Route>
 
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{ margin: "8px" }}
-        toastOptions={{
-          success: {
-            duration: 3000,
-          },
-          error: {
-            duration: 5000,
-          },
-          style: {
-            fontSize: "16px",
-            maxWidth: "500px",
-            padding: "16px 24px",
-            backgroundColor: "#fff",
-            textColor: "#374152",
-          },
-        }}
-      />
-    </QueryClientProvider>
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+
+        <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ margin: "8px" }}
+          toastOptions={{
+            success: {
+              duration: 3000,
+            },
+            error: {
+              duration: 5000,
+            },
+            style: {
+              fontSize: "16px",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              backgroundColor: "#fff",
+              textColor: "#374152",
+            },
+          }}
+        />
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 

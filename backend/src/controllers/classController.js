@@ -1,26 +1,26 @@
-import { Router } from "express";
-import auth from "../middleware/auth.js";
-import * as Classes from "../models/classes.js";
-import * as ClassDetails from "../models/classDetails.js";
+import { Router } from 'express';
+import auth from '../middleware/auth.js';
+import * as Classes from '../models/classes.js';
+import * as ClassDetails from '../models/classDetails.js';
 
 const classController = Router();
 
-classController.get("/", async (req, res) => {
+classController.get('/', async (req, res) => {
   const classes = await Classes.getClasses();
 
   res.status(200).json({
-    status: "Success",
-    message: "Get all classes",
+    status: 'Success',
+    message: 'Get all classes',
     data: classes,
   });
 });
 
-classController.get("/details", async (req, res) => {
+classController.get('/details', async (req, res) => {
   const classes = await ClassDetails.getClassDetails();
 
   res.status(200).json({
-    status: "Success",
-    message: "Get all classes with trainers and locations",
+    status: 'Success',
+    message: 'Get all classes with trainers and locations',
     result: classes.length,
     data: classes,
   });
@@ -39,14 +39,14 @@ classController.get("/:id", async (req, res) => {
   }
   */
 
-classController.get("/:id", async (req, res) => {
+classController.get('/:id', async (req, res) => {
   const classID = req.params.id;
 
   // Implement request validation
   if (!classID || isNaN(parseInt(classID)) || parseInt(classID) < 1) {
     return res.status(400).json({
       status: 400,
-      message: "Invalid class ID provided.",
+      message: 'Invalid class ID provided.',
     });
   }
 
@@ -55,27 +55,27 @@ classController.get("/:id", async (req, res) => {
     if (classInfo) {
       res.status(200).json({
         status: 200,
-        message: "Get class by ID",
+        message: 'Get class by ID',
         data: classInfo,
       });
     } else {
       // 如果没有找到对应的课程信息，返回 404 Not Found
       res.status(404).json({
         status: 404,
-        message: "Class not found",
+        message: 'Class not found',
       });
     }
   } catch (error) {
     // 在实际应用中，最好记录这些错误或更详细地处理它们
-    console.error("Error fetching class by ID:", error);
+    console.error('Error fetching class by ID:', error);
     res.status(500).json({
       status: 500,
-      message: "Failed to get class by ID",
+      message: 'Failed to get class by ID',
     });
   }
 });
 
-classController.post("/", async (req, res) => {
+classController.post('/', auth(['admin', 'trainer']), async (req, res) => {
   // Get the class data out of the request
   const classData = req.body;
 
@@ -89,7 +89,7 @@ classController.post("/", async (req, res) => {
   ) {
     return res.status(400).json({
       status: 400,
-      message: "Missing required class information",
+      message: 'Missing required class information',
     });
   }
 
@@ -99,14 +99,14 @@ classController.post("/", async (req, res) => {
 
     res.status(201).json({
       status: 201,
-      message: "Created new class",
+      message: 'Created new class',
       data: createdClass,
     });
   } catch (error) {
-    console.error("Failed to create new class:", error.message);
+    console.error('Failed to create new class:', error.message);
     res.status(500).json({
       status: 500,
-      message: "Failed to create new class: " + error.message,
+      message: 'Failed to create new class: ' + error.message,
     });
   }
 });
@@ -182,7 +182,7 @@ classController.post("/", async (req, res) => {
 //   }
 // });
 
-classController.patch("/:id", async (req, res) => {
+classController.patch('/:id', async (req, res) => {
   const classId = req.params.id;
   const updateData = req.body; // 假设所有更新数据都在请求体中
   // console.log(Object.keys(updateData));
@@ -190,7 +190,7 @@ classController.patch("/:id", async (req, res) => {
   if (!updateData || Object.keys(updateData).length === 0) {
     return res.status(400).json({
       status: 400,
-      message: "No update data provided",
+      message: 'No update data provided',
     });
   }
 
@@ -199,10 +199,10 @@ classController.patch("/:id", async (req, res) => {
     // console.log(result);
     res.json({
       status: 200,
-      message: "Class updated successfully",
+      message: 'Class updated successfully',
     });
   } catch (error) {
-    console.error("Failed to update class:", error.message);
+    console.error('Failed to update class:', error.message);
     res.status(500).json({
       status: 500,
       message: error.message,
@@ -210,7 +210,7 @@ classController.patch("/:id", async (req, res) => {
   }
 });
 
-classController.delete("/:id", auth(["admin", "trainer"]), async (req, res) => {
+classController.delete('/:id', auth(['admin', 'trainer']), async (req, res) => {
   const classId = req.params.id;
 
   // TODO: 这里可以添加更详细的请求验证，例如检查 classId 是否为有效的数字
@@ -221,21 +221,21 @@ classController.delete("/:id", auth(["admin", "trainer"]), async (req, res) => {
       // 如果没有找到记录或者没有记录被删除，返回 404
       return res.status(404).json({
         status: 404,
-        message: "Class not found",
+        message: 'Class not found',
       });
     }
 
     // 成功删除记录，返回成功响应
     res.status(200).json({
       status: 200,
-      message: "Class deleted successfully",
+      message: 'Class deleted successfully',
     });
   } catch (error) {
-    console.error("Failed to delete class:", error);
+    console.error('Failed to delete class:', error);
     // 处理可能的错误，例如数据库错误
     res.status(500).json({
       status: 500,
-      message: "Failed to delete class",
+      message: 'Failed to delete class',
     });
   }
 });

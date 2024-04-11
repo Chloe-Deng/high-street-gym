@@ -20,7 +20,7 @@ function ClassItem({ course }) {
           <p className="text-sm">Trainer: {trainerName}</p>
 
           <Link to={`${classId}`}>
-            <Button type="small">Book</Button>
+            <Button variation="small">Book</Button>
           </Link>
         </div>
       </div>

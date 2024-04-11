@@ -1,9 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function PageNav() {
   return (
-    <nav className="flex items-center justify-end">
-      <ul className="flex items-center gap-5 pr-2 pt-3">
+    <nav className="flex flex-col items-center gap-4 px-1 pt-4 sm:flex sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:pt-4">
+      <Link to="/" className="text-l font-bold tracking-widest text-zinc-50">
+        High Street Gym Co.
+      </Link>
+
+      <ul className="flex flex-wrap items-center gap-5">
         <li>
           <NavLink
             className="text-l font-bold uppercase text-zinc-100 transition-all duration-300 hover:text-amber-600"

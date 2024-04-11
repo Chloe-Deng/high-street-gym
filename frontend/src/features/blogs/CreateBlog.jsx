@@ -1,10 +1,15 @@
 import { useForm } from "react-hook-form";
-import Button from "../../ui/Button";
 import { useCreatePost } from "./useCreatePost";
+
+import Button from "../../ui/Button";
+import FormRow from "../../ui/FormRow";
+// import CreateBlogForm from "./CreateBlogForm";
 
 function CreateBlog() {
   const { isCreating, createPost } = useCreatePost();
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, formState } = useForm();
+
+  const { errors } = formState;
 
   function onSubmit(data) {
     const postData = {
@@ -15,6 +20,7 @@ function CreateBlog() {
     // console.log(postData);
     createPost(postData, {
       onSuccess: (data) => {
+        console.log(data);
         reset();
       },
     });
@@ -27,7 +33,44 @@ function CreateBlog() {
         onSubmit={handleSubmit(onSubmit)}
         className="flex w-full flex-col gap-8 rounded-lg p-4 sm:p-8"
       >
-        <div className="flex flex-col gap-0.5">
+        <FormRow label="Title" error={errors?.title?.message}>
+          <input
+            className="input-square"
+            type="text"
+            id="title"
+            disabled={isCreating}
+            {...register("title", {
+              required: "Title field is required",
+            })}
+          />
+        </FormRow>
+
+        <FormRow label="Content" error={errors?.content?.message}>
+          <textarea
+            className="input-square"
+            type="text"
+            id="content"
+            rows="10"
+            disabled={isCreating}
+            {...register("content", {
+              required: "Content field is required",
+            })}
+          />
+        </FormRow>
+
+        <FormRow label="Author" error={errors?.author?.message}>
+          <input
+            className="input-square"
+            type="text"
+            id="author"
+            disabled={isCreating}
+            {...register("author", {
+              required: "Author field is required",
+            })}
+          />
+        </FormRow>
+
+        {/* <div className="flex flex-col gap-0.5">
           <label className="text-base" htmlFor="title">
             Title
           </label>
@@ -40,9 +83,10 @@ function CreateBlog() {
               required: "Title field is required",
             })}
           />
-        </div>
+          {errors?.title?.message && <Error>{errors.title.message}</Error>}
+        </div> */}
 
-        <div className="flex flex-col gap-0.5">
+        {/* <div className="flex flex-col gap-0.5">
           <label htmlFor="content">Content</label>
           <textarea
             className="input-square"
@@ -68,16 +112,18 @@ function CreateBlog() {
               required: "Author field is required",
             })}
           />
-        </div>
+        </div> */}
+
         <div className="mt-6 flex justify-center space-x-2">
-          <Button type="primary" disabled={isCreating}>
+          <Button variation="primary" disabled={isCreating}>
             Create Post
           </Button>
-          <Button type="secondary" to="/blog">
+          <Button variation="secondary" to="/blog">
             Back
           </Button>
         </div>
       </form>
+      {/* <CreateBlogForm isCreating={isCreating} onSubmit={onSubmit} /> */}
     </div>
   );
 }

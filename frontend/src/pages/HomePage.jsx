@@ -7,19 +7,21 @@ function HomePage() {
       <PageNav />
 
       <section className="item-center flex h-[85%] flex-col justify-center gap-4 text-center">
-        <h1 className="text-[1.4rem] text-zinc-50">
+        <h1 className="text-[1.4rem] font-semibold text-zinc-50 sm:text-[1.6rem] sm:font-bold">
           You could be powerful.
           <br />
-          High Street Gym keeps boost of your body.
         </h1>
-        <h2 className="text-l mb-4 text-zinc-50">
+        <h2 className="text-[1.2rem] font-medium text-amber-400 sm:text-[1.4rem] sm:font-semibold">
+          High Street Gym keeps boost of your body.
+        </h2>
+        <h2 className="mb-4 text-[1.1rem] text-zinc-50 sm:text-[1.2rem]">
           Elevate your fitness in a space where each workout turns potential
           into progress. Join us on the path to peak power.
           <br />
           Ready, set, thrive!
         </h2>
         <div>
-          <Button to="/classes" type="primary">
+          <Button to="/classes" variation="primary">
             Start booking
           </Button>
         </div>

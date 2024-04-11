@@ -1,11 +1,12 @@
 import { API_URL } from "./apiURL";
 
-export async function getBookings() {
+export async function getBookings(authenticationKey) {
   // GET from the API /animals
   const res = await fetch(API_URL + "/bookings", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "X-AUTH-KEY": authenticationKey,
     },
   });
 

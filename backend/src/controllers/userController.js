@@ -1,14 +1,14 @@
-import { Router } from "express";
-import bcrypt from "bcryptjs";
-import { v4 as uuid4 } from "uuid";
-import * as Users from "../models/users.js";
-import auth from "../middleware/auth.js";
+import { Router } from 'express';
+import bcrypt from 'bcryptjs';
+import { v4 as uuid4 } from 'uuid';
+import * as Users from '../models/users.js';
+import auth from '../middleware/auth.js';
 
 // TODO: Implement input validation
 
 const userController = Router();
 
-userController.post("/login", (req, res) => {
+userController.post('/login', (req, res) => {
   // access request body
   let loginData = req.body;
   const { email, password } = req.body;
@@ -18,7 +18,7 @@ userController.post("/login", (req, res) => {
   if (!email || !password)
     return res
       .status(400)
-      .json({ status: "fail", message: "Please provide email and password" });
+      .json({ status: 'fail', message: 'Please provide email and password' });
 
   console.log(email, password);
 
@@ -30,14 +30,15 @@ userController.post("/login", (req, res) => {
         Users.update(user).then((result) => {
           res.status(200).json({
             status: 200,
-            message: "user logged in",
+            message: 'user logged in',
             authenticationKey: user.authenticationKey,
+            user: user,
           });
         });
       } else {
         res.status(400).json({
           status: 400,
-          message: "invalid credentials",
+          message: 'invalid credentials',
         });
       }
     })
@@ -45,43 +46,43 @@ userController.post("/login", (req, res) => {
       console.log(error);
       res.status(500).json({
         status: 500,
-        message: "login failed",
+        message: 'login failed',
       });
     });
 });
 
-userController.post("/logout", (req, res) => {
-  const authenticationKey = req.get("X-AUTH-KEY");
+userController.post('/logout', (req, res) => {
+  const authenticationKey = req.get('X-AUTH-KEY');
   Users.getByAuthenticationKey(authenticationKey)
     .then((user) => {
       user.authenticationKey = null;
       Users.update(user).then((user) => {
         res.status(200).json({
           status: 200,
-          message: "user logged out",
+          message: 'user logged out',
         });
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "failed to logout user",
+        message: 'failed to logout user',
       });
     });
 });
 
-userController.get("/", auth(["admin"]), async (req, res) => {
+userController.get('/', auth(['admin']), async (req, res) => {
   const users = await Users.getAll();
 
   res.status(200).json({
     status: 200,
     result: users.length,
-    message: "User list",
+    message: 'User list',
     users: users,
   });
 });
 
-userController.get("/:id", auth(["admin", "trainer", "member"]), (req, res) => {
+userController.get('/:id', auth(['admin', 'trainer', 'member']), (req, res) => {
   const userID = req.params.id;
 
   // TODO: Implement request validation
@@ -93,45 +94,45 @@ userController.get("/:id", auth(["admin", "trainer", "member"]), (req, res) => {
     .then((user) => {
       res.status(200).json({
         status: 200,
-        message: "Get user by ID",
+        message: 'Get user by ID',
         user: user,
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "Failed to get user by ID",
+        message: 'Failed to get user by ID',
       });
     });
 });
 
-userController.get("/authentication/:authenticationKey", (req, res) => {
+userController.get('/authentication/:authenticationKey', (req, res) => {
   const authenticationKey = req.params.authenticationKey;
 
   Users.getByAuthenticationKey(authenticationKey)
     .then((user) => {
       res.status(200).json({
         status: 200,
-        message: "Get user by authentication key",
+        message: 'Get user by authentication key',
         user: user,
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "Failed to get user by authentication key",
+        message: 'Failed to get user by authentication key',
       });
     });
 });
 
-userController.post("/", auth(["admin"]), (req, res) => {
+userController.post('/', auth(['admin']), (req, res) => {
   // Get the user data out of the request
   const userData = req.body.user;
 
   // TODO: Implement request validation
 
   // hash the password if it isn't already hashed
-  if (!userData.password.startsWith("$2a")) {
+  if (!userData.password.startsWith('$2a')) {
     userData.password = bcrypt.hashSync(userData.password);
   }
 
@@ -143,7 +144,7 @@ userController.post("/", auth(["admin"]), (req, res) => {
     userData.role,
     userData.firstName,
     userData.lastName,
-    null,
+    null
   );
 
   // Use the create model function to insert this user into the DB
@@ -151,19 +152,19 @@ userController.post("/", auth(["admin"]), (req, res) => {
     .then((user) => {
       res.status(200).json({
         status: 200,
-        message: "Created user",
+        message: 'Created user',
         user: user,
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "Failed to create user",
+        message: 'Failed to create user',
       });
     });
 });
 
-userController.post("/register", (req, res) => {
+userController.post('/register', (req, res) => {
   // Get the user data out of the request
   const userData = req.body;
 
@@ -177,10 +178,10 @@ userController.post("/register", (req, res) => {
     null,
     userData.email,
     userData.password,
-    "member",
+    'member',
     userData.firstName,
     userData.lastName,
-    null,
+    null
   );
 
   // Use the create model function to insert this user into the DB
@@ -188,21 +189,21 @@ userController.post("/register", (req, res) => {
     .then((user) => {
       res.status(200).json({
         status: 200,
-        message: "Registration successful",
+        message: 'Registration successful',
         user: user,
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "Registration failed",
+        message: 'Registration failed',
       });
     });
 });
 
 userController.patch(
-  "/:id",
-  auth(["admin", "trainer", "member"]),
+  '/:id',
+  auth(['admin', 'trainer', 'member']),
   async (req, res) => {
     // Get the user data out of the request
     //
@@ -222,7 +223,7 @@ userController.patch(
     // update their own user records.
 
     // hash the password if it isn't already hashed
-    if (userData.password && !userData.password.startsWith("$2a")) {
+    if (userData.password && !userData.password.startsWith('$2a')) {
       userData.password = await bcrypt.hash(userData.password, 10);
     }
 
@@ -234,7 +235,7 @@ userController.patch(
       userData.role,
       userData.firstName,
       userData.lastName,
-      userData.authenticationKey,
+      userData.authenticationKey
     );
 
     // Use the update model function to update this user in the DB
@@ -242,7 +243,7 @@ userController.patch(
       .then((user) => {
         res.status(200).json({
           status: 200,
-          message: "Updated user",
+          message: 'Updated user',
           user: user,
         });
       })
@@ -250,13 +251,13 @@ userController.patch(
         console.log(error);
         res.status(500).json({
           status: 500,
-          message: "Failed to update user",
+          message: 'Failed to update user',
         });
       });
-  },
+  }
 );
 
-userController.delete("/:id", auth(["admin"]), (req, res) => {
+userController.delete('/:id', auth(['admin']), (req, res) => {
   const userID = req.params.id;
 
   // TODO: Implement request validation
@@ -265,13 +266,13 @@ userController.delete("/:id", auth(["admin"]), (req, res) => {
     .then((result) => {
       res.status(200).json({
         status: 200,
-        message: "User deleted",
+        message: 'User deleted',
       });
     })
     .catch((error) => {
       res.status(500).json({
         status: 500,
-        message: "Failed to delete user",
+        message: 'Failed to delete user',
       });
     });
 });

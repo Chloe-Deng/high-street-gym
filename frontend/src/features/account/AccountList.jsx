@@ -1,11 +1,11 @@
-import AccountItem from "./AccountItem";
+// import AccountItem from "./AccountItem";
 
-function AccountList() {
-  return (
-    <div>
-      <AccountItem />
-    </div>
-  );
-}
+// function AccountList() {
+//   return (
+//     <div>
+//       <AccountItem />
+//     </div>
+//   );
+// }
 
-export default AccountList;
+// export default AccountList;

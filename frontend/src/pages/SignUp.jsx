@@ -1,4 +1,4 @@
-import SignUpForm from "../features/members/SignUpForm";
+import SignUpForm from "../features/users/SignUpForm";
 import Header from "../ui/Header";
 
 function SignUp() {

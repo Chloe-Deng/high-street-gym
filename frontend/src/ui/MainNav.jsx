@@ -6,8 +6,11 @@ import {
   HiCloudArrowUp,
 } from "react-icons/hi2";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function MainNav() {
+const {isAuthenticated, user} = useAuth()
+
   return (
     <nav className="flex items-center justify-center bg-zinc-800 px-4 py-2 text-sm uppercase text-zinc-200 sm:px-6 md:text-base">
       <ul className="flex items-center gap-5 md:gap-8">
