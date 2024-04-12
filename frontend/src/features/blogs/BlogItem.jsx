@@ -1,5 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext";
-import { getStoredAuthKey } from "../../utils/getStoredAuthKey";
+import getStoredAuthKey from "../../utils/getStoredAuthKey";
 import { useDeletePost } from "./useDeletePost";
 import { HiTrash } from "react-icons/hi2";
 

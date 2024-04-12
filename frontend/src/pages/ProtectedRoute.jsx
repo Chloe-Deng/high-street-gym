@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import Unauthorized from "../ui/Unauthorized";
 
 function ProtectedRoute({ children, accessRoles = [] }) {
   const { isAuthenticated, user } = useAuth();
@@ -20,12 +21,7 @@ function ProtectedRoute({ children, accessRoles = [] }) {
 
   // 如果用户没有权限，则显示没有授权的消息
   if (!userIsAuthorized && isAuthenticated) {
-    return (
-      <div className="mt-20 text-center">
-        <h2 className="text-2xl font-bold">Unauthorized</h2>
-        <p className="mt-4">You do not have permission to access this page.</p>
-      </div>
-    );
+    return <Unauthorized />;
   }
 
   // 如果用户有权限，则渲染children

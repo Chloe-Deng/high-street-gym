@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 function MainNav() {
-const {isAuthenticated, user} = useAuth()
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <nav className="flex items-center justify-center bg-zinc-800 px-4 py-2 text-sm uppercase text-zinc-200 sm:px-6 md:text-base">
@@ -36,13 +36,13 @@ const {isAuthenticated, user} = useAuth()
         <li className="flex items-center justify-center gap-1 px-2 py-1">
           <Link to="/upload_xml" className="flex flex-col items-center gap-1">
             <HiCloudArrowUp className="text-grey-0 h-6 w-6" />
-            <span className="hidden md:block md:text-xs">UploadXML</span>
+            <span className="hidden md:block md:text-xs">Upload</span>
           </Link>
         </li>
         <li className="flex items-center justify-center gap-1 px-2 py-1">
           <Link to="/account" className="flex flex-col items-center gap-1">
             <HiOutlineUsers className="text-grey-0 h-6 w-6" />
-            <span className="text-xs">Account</span>
+            <span className="text-xs">Accounts</span>
           </Link>
         </li>
       </ul>

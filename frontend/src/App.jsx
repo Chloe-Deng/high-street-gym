@@ -17,6 +17,7 @@ import Class from "./features/classes/Class";
 import CreateBlog from "./features/blogs/CreateBlog";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import Profile from "./pages/Profile";
 
 // Set up the cache, store the remote date in the cache so that we don't need to fetch the same data from the server every time
 const queryClient = new QueryClient({
@@ -61,6 +62,7 @@ function App() {
                 }
               ></Route>
               <Route path="account" element={<Account />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
 
             <Route path="*" element={<PageNotFound />} />

@@ -212,31 +212,26 @@ classController.patch('/:id', async (req, res) => {
 
 classController.delete('/:id', auth(['admin', 'trainer']), async (req, res) => {
   const classId = req.params.id;
-
-  // TODO: 这里可以添加更详细的请求验证，例如检查 classId 是否为有效的数字
+  // console.log(classId);
 
   try {
-    const affectedRows = await Classes.deleteById(classId);
-    if (affectedRows === 0) {
-      // 如果没有找到记录或者没有记录被删除，返回 404
-      return res.status(404).json({
-        status: 404,
-        message: 'Class not found',
-      });
-    }
+    // 调用之前定义的 deleteClass 函数
+    const result = await ClassDetails.deleteClass(classId);
 
-    // 成功删除记录，返回成功响应
+    // 成功响应
     res.status(200).json({
-      status: 200,
       message: 'Class deleted successfully',
+      classId: result.classId,
     });
   } catch (error) {
-    console.error('Failed to delete class:', error);
-    // 处理可能的错误，例如数据库错误
-    res.status(500).json({
-      status: 500,
-      message: 'Failed to delete class',
-    });
+    // 错误处理
+    if (error.message === 'Class not found or already deleted') {
+      // 如果课程未找到或已删除，发送404状态码
+      res.status(404).send(error.message);
+    } else {
+      // 对于其他错误，发送500状态码
+      res.status(500).send('Server error while deleting class');
+    }
   }
 });
 

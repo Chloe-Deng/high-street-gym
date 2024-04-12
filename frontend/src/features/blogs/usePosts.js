@@ -3,7 +3,7 @@ import { getPosts } from "../../services/apiPosts";
 
 export function usePosts() {
   const { isLoading, data: posts } = useQuery({
-    queryKey: ["post"],
+    queryKey: ["posts"],
     queryFn: getPosts,
   });
 

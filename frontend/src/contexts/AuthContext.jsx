@@ -11,7 +11,7 @@ const AuthContext = createContext();
 const initialState = {
   isAuthenticated: false,
   user: null,
-  role: null,
+  authenticationKey: null,
 };
 
 // 定义reducer函数处理action
@@ -21,13 +21,15 @@ function authReducer(state, action) {
       return {
         ...state,
         isAuthenticated: true,
-        user: action.payload,
+        user: action.payload.user,
+        authenticationKey: action.payload.authenticationKey,
       };
     case "LOGOUT":
       return {
         ...state,
         isAuthenticated: false,
         user: null,
+        authenticationKey: null,
       };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -36,44 +38,102 @@ function authReducer(state, action) {
 
 // 创建提供者组件
 function AuthProvider({ children }) {
-  const [{ user, isAuthenticated }, dispatch] = useReducer(
+  // const [{ user, isAuthenticated, authenticationKey }, dispatch] = useReducer(
+  //   authReducer,
+  //   initialState,
+  // );
+
+  // useEffect(() => {
+  //   const authenticationKey = localStorage.getItem("authenticationKey");
+  //   if (authenticationKey) {
+  //     getByAuthenticationKey(authenticationKey)
+  //       .then((user) => {
+  //         dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
+  //       })
+  //       .catch(() => {
+  //         localStorage.removeItem("authenticationKey"); // 清除无效的认证密钥
+  //       });
+  //   }
+  // }, []);
+
+  // // 登录
+  // async function login(email, password) {
+  //   const { user, authenticationKey } = await apiLogin(email, password);
+  //   // console.log(user, authenticationKey);
+
+  //   localStorage.setItem("authenticationKey", authenticationKey);
+
+  //   console.log(user.id);
+  //   localStorage.setItem("userID", user.id);
+
+  //   dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
+  // }
+
+  // // 登出
+  // async function logout() {
+  //   if (user && user.authenticationKey) {
+  //     await apiLogout(user.authenticationKey);
+  //   }
+  //   localStorage.removeItem("authenticationKey");
+  //   dispatch({ type: "LOGOUT" });
+  // }
+
+  const [{ user, isAuthenticated, authenticationKey }, dispatch] = useReducer(
     authReducer,
     initialState,
   );
 
   useEffect(() => {
-    const authenticationKey = localStorage.getItem("authenticationKey");
-    if (authenticationKey) {
-      getByAuthenticationKey(authenticationKey)
-        .then((user) => {
-          dispatch({ type: "LOGIN", payload: user });
-        })
-        .catch(() => {
-          localStorage.removeItem("authenticationKey"); // 清除无效的认证密钥
-        });
-    }
+    const initAuthentication = async () => {
+      const authenticationKey = localStorage.getItem("authenticationKey");
+      if (authenticationKey) {
+        try {
+          const user = await getByAuthenticationKey(authenticationKey);
+          dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
+        } catch (error) {
+          console.error("Error fetching user by authentication key:", error);
+          localStorage.removeItem("authenticationKey"); // Clear the invalid auth key
+        }
+      }
+    };
+
+    initAuthentication();
   }, []);
 
-  // 登录
   const login = async (email, password) => {
-    const { user, authenticationKey } = await apiLogin(email, password);
-    console.log(user);
-    localStorage.setItem("authenticationKey", authenticationKey);
-    dispatch({ type: "LOGIN", payload: user });
+    try {
+      const { user, authenticationKey } = await apiLogin(email, password);
+      if (!user || !authenticationKey) {
+        throw new Error("Authentication failed");
+      }
+      localStorage.setItem("authenticationKey", authenticationKey);
+      localStorage.setItem("userID", user.id); // Assume user always has an ID
+      dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
+    } catch (error) {
+      console.error("Login error:", error);
+      // Handle login error, such as displaying a message to the user
+    }
   };
 
-  // 登出
   const logout = async () => {
-    if (user && user.authenticationKey) {
-      await apiLogout(user.authenticationKey);
+    try {
+      if (user && authenticationKey) {
+        await apiLogout(authenticationKey);
+      }
+      localStorage.removeItem("authenticationKey");
+      localStorage.removeItem("userID");
+      dispatch({ type: "LOGOUT" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Optionally handle logout error
     }
-    localStorage.removeItem("authenticationKey");
-    dispatch({ type: "LOGOUT" });
   };
 
   // 返回上下文提供者
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, authenticationKey, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

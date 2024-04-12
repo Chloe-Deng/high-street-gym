@@ -12,10 +12,11 @@ export async function login(email, password) {
     }),
   });
 
-  console.log(response);
+  // console.log(response);
+  if (!response.ok) throw Error("Failed logging in");
 
   const APIResponseObject = await response.json();
-  console.log(APIResponseObject);
+  // console.log(APIResponseObject);
 
   return APIResponseObject;
 }
@@ -29,6 +30,8 @@ export async function logout(authenticationKey) {
     },
     body: JSON.stringify({}),
   });
+
+  if (!response.ok) throw Error("Can not logout");
 
   const APIResponseObject = await response.json();
 
@@ -45,24 +48,37 @@ export async function getAllUsers(authenticationKey) {
     },
   });
 
+  if (!response.ok) throw Error("Can not get the users data.");
+
   const data = await response.json();
 
   return data.users;
 }
 
 export async function getUserByID(userID, authenticationKey) {
-  const response = await fetch(API_URL + "/users/" + userID, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-AUTH-KEY": authenticationKey,
-    },
-  });
+  try {
+    const response = await fetch(`${API_URL}/users/${userID}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-AUTH-KEY": authenticationKey,
+      },
+    });
 
-  const APIResponseObject = await response.json();
-  console.log(APIResponseObject);
+    if (!response.ok) {
+      // 可以根据不同的响应状态码抛出不同的错误
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch user data.");
+    }
 
-  return APIResponseObject;
+    const data = await response.json();
+
+    return data.user;
+  } catch (error) {
+    // 这里可以处理网络错误或你在上面代码中抛出的错误
+    console.error("getUserByID error:", error.message);
+    throw error; // 重新抛出错误，确保调用者知道出现了错误
+  }
 }
 
 export async function getByAuthenticationKey(authenticationKey) {
@@ -81,20 +97,46 @@ export async function getByAuthenticationKey(authenticationKey) {
   return APIResponseObject.user;
 }
 
-export async function updateUser(user, authenticationKey) {
-  const response = await fetch(API_URL + "/users/" + user.id, {
+// Send PATCH request to the backend API to update user info
+export async function updateUser({ user, authenticationKey }) {
+  const userId = user.id;
+  const updatedFields = { ...user };
+  delete updatedFields.id; // Remove the id as it should not be in the update fields
+
+  const response = await fetch(API_URL + "/users/" + userId, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       "X-AUTH-KEY": authenticationKey,
     },
-    body: JSON.stringify({ user }),
+    body: JSON.stringify(updatedFields), // Send the updated fields directly
   });
 
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
   const patchUserResult = await response.json();
+  // console.log(patchUserResult);
 
   return patchUserResult;
 }
+
+// export async function updateUser({ user, authenticationKey }) {
+//   const response = await fetch(API_URL + "/users/" + user.id, {
+//     method: "PATCH",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "X-AUTH-KEY": authenticationKey,
+//     },
+//     body: JSON.stringify({ user }),
+//   });
+
+//   const patchUserResult = await response.json();
+//   console.log(patchUserResult);
+
+//   return patchUserResult;
+// }
 
 export async function create(user, authenticationKey) {
   const response = await fetch(API_URL + "/users", {

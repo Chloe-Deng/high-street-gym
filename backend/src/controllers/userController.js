@@ -12,7 +12,7 @@ userController.post('/login', (req, res) => {
   // access request body
   let loginData = req.body;
   const { email, password } = req.body;
-  console.log(loginData);
+  // console.log(loginData);
 
   // TODO: Implement request validation
   if (!email || !password)
@@ -71,7 +71,7 @@ userController.post('/logout', (req, res) => {
     });
 });
 
-userController.get('/', auth(['admin']), async (req, res) => {
+userController.get('/', auth(['admin', 'trainer']), async (req, res) => {
   const users = await Users.getAll();
 
   res.status(200).json({
@@ -84,6 +84,7 @@ userController.get('/', auth(['admin']), async (req, res) => {
 
 userController.get('/:id', auth(['admin', 'trainer', 'member']), (req, res) => {
   const userID = req.params.id;
+  console.log(userID);
 
   // TODO: Implement request validation
 
@@ -201,6 +202,7 @@ userController.post('/register', (req, res) => {
     });
 });
 
+/*
 userController.patch(
   '/:id',
   auth(['admin', 'trainer', 'member']),
@@ -213,9 +215,10 @@ userController.patch(
     // currently being updated.
     const userID = req.params.id;
     const userData = req.body.user;
+    console.log(userID, userData);
 
     // Use ID passed in URL
-    userData.id = userID;
+    userData.id === userID;
 
     // TODO: Implement request validation
 
@@ -254,6 +257,46 @@ userController.patch(
           message: 'Failed to update user',
         });
       });
+  }
+);
+*/
+
+userController.patch(
+  '/:id',
+  auth(['admin', 'trainer', 'member']),
+  async (req, res) => {
+    const userID = req.params.id;
+    const userData = req.body;
+
+    // console.log(userID, userData);
+
+    // 确认请求中的userID和URL中的userID匹配，防止潜在的安全问题
+    if (userData.id && userData.id !== userID) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'User ID does not match the one in the URL.',
+      });
+    }
+
+    // 将userID添加到userData对象中，确保更新正确的用户记录
+    userData.id = userID;
+
+    // 调用更新函数
+    try {
+      const updatedUser = await Users.updateUser(userData);
+      res.status(200).json({
+        status: 200,
+        message: 'User updated successfully',
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({
+        status: 500,
+        message: 'Failed to update user',
+        error: error.message,
+      });
+    }
   }
 );
 

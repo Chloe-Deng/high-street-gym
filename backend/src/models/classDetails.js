@@ -1,4 +1,4 @@
-import { db } from "../database.js";
+import { db } from '../database.js';
 
 // Class detail model constructor
 export function classDetail(
@@ -9,7 +9,7 @@ export function classDetail(
   startDate,
   startTime,
   locationName,
-  trainerName,
+  trainerName
 ) {
   return {
     classId,
@@ -54,11 +54,11 @@ export async function getClassDetails() {
         row.datetime,
         row.start_at,
         row.location_name,
-        row.trainer_name,
-      ),
+        row.trainer_name
+      )
     );
   } catch (error) {
-    throw new Error("Error fetching class details: " + error.message);
+    throw new Error('Error fetching class details: ' + error.message);
   }
 }
 
@@ -82,7 +82,7 @@ export async function getClass(classID) {
     INNER JOIN users tr ON cl.trainer_id = tr.id
     WHERE cl.id = ? AND tr.role = 'trainer'
   `,
-      [classID],
+      [classID]
     );
 
     if (rows.length > 0) {
@@ -96,22 +96,22 @@ export async function getClass(classID) {
           classInfo.startDate,
           classInfo.startTime,
           classInfo.locationName,
-          classInfo.trainerName,
-        ),
+          classInfo.trainerName
+        )
       );
     } else {
-      return Promise.reject(new Error("No class found with the given ID."));
+      return Promise.reject(new Error('No class found with the given ID.'));
     }
   } catch (error) {
-    console.error("Error fetching class details by ID:", error);
+    console.error('Error fetching class details by ID:', error);
     return Promise.reject(error);
   }
 }
 
 async function findActivityIdByName(activityName) {
   const [activities] = await db.query(
-    "SELECT activity_id FROM activities WHERE activity_name = ?",
-    [activityName],
+    'SELECT activity_id FROM activities WHERE activity_name = ?',
+    [activityName]
   );
   if (activities.length === 0) {
     throw new Error(`Activity with name ${activityName} not found.`);
@@ -121,8 +121,8 @@ async function findActivityIdByName(activityName) {
 
 async function findLocationIdByName(locationName) {
   const [locations] = await db.query(
-    "SELECT id FROM locations WHERE location_name = ?",
-    [locationName],
+    'SELECT id FROM locations WHERE location_name = ?',
+    [locationName]
   );
   if (locations.length === 0) {
     throw new Error(`Location with name ${locationName} not found.`);
@@ -132,10 +132,10 @@ async function findLocationIdByName(locationName) {
 
 async function findTrainerIdByName(trainerName) {
   // Split the full name into first and last names for the query
-  const [firstName, lastName] = trainerName.split(" ");
+  const [firstName, lastName] = trainerName.split(' ');
   const [trainers] = await db.query(
     "SELECT id FROM users WHERE first_name = ? AND last_name = ? AND role = 'trainer'",
-    [firstName, lastName],
+    [firstName, lastName]
   );
   if (trainers.length === 0) {
     throw new Error(`Trainer with name ${trainerName} not found.`);
@@ -179,7 +179,7 @@ export async function updateById(classId, classInfo) {
   // If activityName is provided, find the corresponding activity_id
   if (classInfo.activityName) {
     const activityId = await findActivityIdByName(classInfo.activityName);
-    if (!activityId) throw new Error("Activity name not found");
+    if (!activityId) throw new Error('Activity name not found');
     fieldsToUpdate.activity_id = activityId;
 
     // 更新activities表
@@ -195,13 +195,13 @@ export async function updateById(classId, classInfo) {
   // Similar approach for locationName and trainerName
   if (classInfo.locationName) {
     const locationId = await findLocationIdByName(classInfo.locationName);
-    if (!locationId) throw new Error("Location name not found");
+    if (!locationId) throw new Error('Location name not found');
     fieldsToUpdate.location_id = locationId;
   }
 
   if (classInfo.trainerName) {
     const trainerId = await findTrainerIdByName(classInfo.trainerName);
-    if (!trainerId) throw new Error("Trainer name not found");
+    if (!trainerId) throw new Error('Trainer name not found');
     fieldsToUpdate.trainer_id = trainerId;
   }
 
@@ -212,12 +212,12 @@ export async function updateById(classId, classInfo) {
   // Build the SQL query dynamically based on the fields provided
   const setSql = Object.keys(fieldsToUpdate)
     .map((key) => `${key} = ?`)
-    .join(", ");
+    .join(', ');
   const values = Object.values(fieldsToUpdate);
 
   // Ensure there are fields to update
   if (values.length === 0) {
-    throw new Error("No valid fields provided for update");
+    throw new Error('No valid fields provided for update');
   }
 
   // Add classId to the parameters for the WHERE clause
@@ -228,11 +228,11 @@ export async function updateById(classId, classInfo) {
   try {
     const [result] = await db.query(sql, values);
     if (result.affectedRows === 0) {
-      throw new Error("Class not found or no fields updated");
+      throw new Error('Class not found or no fields updated');
     }
-    return { message: "Class updated successfully", classId };
+    return { message: 'Class updated successfully', classId };
   } catch (error) {
-    console.error("Error updating class:", error);
+    console.error('Error updating class:', error);
     throw error;
   }
 }
@@ -240,7 +240,7 @@ export async function updateById(classId, classInfo) {
 export async function createOrUpdateActivity(
   activityName,
   activityDuration,
-  activityDescription,
+  activityDescription
 ) {
   // 尝试查找活动
   const activityId = await findActivityIdByName(activityName);
@@ -278,14 +278,14 @@ export async function createClass(newClassInfo) {
   const activityId = await createOrUpdateActivity(
     activityName,
     activityDuration,
-    activityDescription,
+    activityDescription
   );
 
   // 然后查找location_id和trainer_id
   const locationId = await findLocationIdByName(locationName);
-  if (!locationId) throw new Error("Location name not found");
+  if (!locationId) throw new Error('Location name not found');
   const trainerId = await findTrainerIdByName(trainerName);
-  if (!trainerId) throw new Error("Trainer name not found");
+  if (!trainerId) throw new Error('Trainer name not found');
 
   // 插入新的class记录
   const insertSql = `
@@ -310,4 +310,25 @@ export async function createClass(newClassInfo) {
     activityDuration,
     activityDescription,
   };
+}
+
+export async function deleteClass(classId) {
+  // 构建删除特定class记录的SQL语句
+  const deleteSql = `
+    DELETE FROM classes 
+    WHERE id = ?
+  `;
+
+  try {
+    const [result] = await db.query(deleteSql, [classId]);
+
+    if (result.affectedRows === 0) {
+      throw new Error('Class not found or already deleted');
+    }
+
+    return { message: 'Class deleted successfully', classId };
+  } catch (error) {
+    console.error('Error deleting class:', error);
+    throw error; // 重新抛出错误让调用者能够处理它
+  }
 }

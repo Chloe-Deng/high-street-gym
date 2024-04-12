@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import xml2js from "xml2js";
 import toast from "react-hot-toast";
 import { createClass } from "../services/apiClasses";
-import { getStoredAuthKey } from "../utils/getStoredAuthKey";
+import getStoredAuthKey from "../utils/getStoredAuthKey";
 
 function UploadXML() {
   const { register, handleSubmit } = useForm();

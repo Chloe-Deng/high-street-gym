@@ -1,74 +1,47 @@
-import { useAuth } from "../../contexts/AuthContext";
-import Button from "../../ui/Button";
-import FormRow from "../../ui/FormRow";
-// import Loader from "../../ui/Loader";
-// import { useUser } from "./useUser";
+// import { useAuth } from "../../contexts/AuthContext";
+// import Button from "../../ui/Button";
+// import FormRow from "../../ui/FormRow";
+import React, { useState } from "react";
+import { HiSquare2Stack, HiPencil, HiTrash } from "react-icons/hi2";
+import CreateAccountForm from "./CreateAccountForm";
 
-function AccountItem() {
-  const { user } = useAuth();
-  const { firstName, lastName, email } = user;
+function AccountItem({ user }) {
+  const { id, firstName, lastName, email, password } = user;
+
+  const [showForm, setShowForm] = useState(false);
 
   return (
-    <div className="px-2 py-4 sm:px-4 sm:py-6">
-      <h1 className="px-4 text-xl font-bold sm:px-8 sm:text-2xl">
-        Hello, {firstName}
-      </h1>
-      <form className="flex w-full flex-col gap-4 rounded-lg p-4 sm:p-8">
-        <div className="flex flex-col">
-          {/* <label className="text-base" htmlFor="firstName">
-            First name
-          </label> */}
-          <input
-            className="input-square"
-            type="text"
-            name="firstName"
-            placeholder="First name"
-            defaultValue={firstName}
-            required
-          />
+    <>
+      <div className="grid grid-cols-5 items-center gap-x-6 border-b border-zinc-200 p-4 last:border-b-0">
+        <div className="text-sm text-zinc-600">{id}</div>
+        <div className="text-sm text-zinc-600">{firstName}</div>
+        <div className="text-sm text-zinc-600">{lastName}</div>
+        <div className="text-zinc-600">{email}</div>
+        {/* {password ? (
+          <div className="font-medium text-green-700">{password}</div>
+        ) : (
+          <span>&mdash;</span>
+        )} */}
+        <div>
+          <button>
+            <HiSquare2Stack />
+          </button>
+          <button onClick={() => setShowForm((show) => !show)}>
+            <HiPencil />
+          </button>
+          <button>
+            <HiTrash />
+          </button>
         </div>
-
-        <div className="flex flex-col">
-          <input
-            className="input-square"
-            type="text"
-            name="lastName"
-            placeholder="Last name"
-            defaultValue={lastName}
-            required
-          />
-        </div>
-
-        {/* <div className="flex flex-col">
-          <input
-            className="input-square"
-            type="text"
-            name="email"
-            placeholder="Email"
-            defaultValue={email}
-            required
-          />
-        </div> */}
-
-        <FormRow>
-          <input
-            className="input-square"
-            type="text"
-            name="email"
-            placeholder="Email"
-            defaultValue={email}
-            required
-          />
-        </FormRow>
-
-        <div className="mt-6 flex justify-center space-x-2">
-          <Button variation="primary">Update</Button>
-          <Button variation="secondary" to="/">
-            Back
-          </Button>
-        </div>
-      </form>
-    </div>
+      </div>
+      {showForm && <CreateAccountForm />}
+    </>
+    // <li className="flex flex-col px-2 py-4 md:px-4">
+    //   <p className="mb-4 text-xs text-zinc-500">{firstName}</p>
+    //   <p className="mb-4 text-sm">{lastName}</p>
+    //   <p className="text-xs text-zinc-500">{email}</p>
+    //   <p className="text-xs text-zinc-500">{password}</p>
+    // </li>
   );
 }
 
