@@ -38,6 +38,8 @@ export async function getClass(classID) {
     },
   });
 
+  console.log(res);
+
   const { data } = await res.json();
 
   return data;

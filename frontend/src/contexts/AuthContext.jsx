@@ -93,6 +93,7 @@ function AuthProvider({ children }) {
         } catch (error) {
           console.error("Error fetching user by authentication key:", error);
           localStorage.removeItem("authenticationKey"); // Clear the invalid auth key
+          dispatch({ type: "LOGOUT" });
         }
       }
     };
@@ -103,11 +104,14 @@ function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const { user, authenticationKey } = await apiLogin(email, password);
+
       if (!user || !authenticationKey) {
         throw new Error("Authentication failed");
       }
+
       localStorage.setItem("authenticationKey", authenticationKey);
       localStorage.setItem("userID", user.id); // Assume user always has an ID
+
       dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
     } catch (error) {
       console.error("Login error:", error);
@@ -120,8 +124,11 @@ function AuthProvider({ children }) {
       if (user && authenticationKey) {
         await apiLogout(authenticationKey);
       }
+
       localStorage.removeItem("authenticationKey");
       localStorage.removeItem("userID");
+      // sessionStorage.clear();
+
       dispatch({ type: "LOGOUT" });
     } catch (error) {
       console.error("Logout error:", error);

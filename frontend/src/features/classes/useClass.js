@@ -7,8 +7,8 @@ export function useClass(classID) {
     data: classData,
     error,
   } = useQuery({
-    queryKey: ["classes", classID],
-    queryFn: (classID) => getClass(classID),
+    queryKey: ["class", classID],
+    queryFn: () => getClass(classID),
     enabled: !!classID, // This ensures the query only runs when classID is available
   });
 

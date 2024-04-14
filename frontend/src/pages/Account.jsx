@@ -9,9 +9,7 @@ function Account({ accessRoles = ["admin", "trainer"] }) {
   const userIsAuthorized = user && accessRoles.includes(user.role);
   return (
     <>
-      <div className="mb-5 mt-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">All Users</h1>
-      </div>
+      
       {userIsAuthorized ? <AccountList /> : <Unauthorized />}
     </>
   );

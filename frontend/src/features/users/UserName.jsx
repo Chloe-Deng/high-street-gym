@@ -1,15 +1,15 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Button from "../../ui/Button";
 import {
   HiOutlineArrowRightOnRectangle,
-  HiOutlineUser,
   HiOutlineUserCircle,
 } from "react-icons/hi2";
 
 function UserName() {
   const { user, isAuthenticated, logout } = useAuth();
-  console.log(user);
+  // console.log(user);
+  console.log(isAuthenticated);
 
   const navigate = useNavigate();
 
@@ -23,12 +23,22 @@ function UserName() {
       {isAuthenticated ? (
         <div className="flex items-center gap-2 sm:gap-3">
           <p>{user?.firstName}</p>
-          <Link to="/profile">
+          <NavLink
+            className={({ isActive }) =>
+              ` transition-colors duration-300 ${
+                isActive ? "text-zinc-50" : "hover:text-zinc-50"
+              }`
+            }
+            to="/profile"
+          >
             <HiOutlineUserCircle className="h-[1.3rem] w-[1.3rem]" />
-          </Link>
-          <Button onClick={handleClick}>
+          </NavLink>
+          <button
+            className="transition-colors duration-300 hover:text-zinc-50"
+            onClick={handleClick}
+          >
             <HiOutlineArrowRightOnRectangle className="text-grey-700 h-5 w-5" />
-          </Button>
+          </button>
         </div>
       ) : (
         <Button variation="small" to={"/login"}>

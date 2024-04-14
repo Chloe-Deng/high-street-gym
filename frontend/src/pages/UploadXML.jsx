@@ -71,7 +71,7 @@ function UploadXML() {
       onSubmit={handleSubmit(onSubmit, onError)}
     >
       <div>
-        <h1 className="text-l py-5 text-center font-semibold">Upload Files</h1>
+        <h1 className="py-8 text-center text-xl font-semibold">Upload Files</h1>
         <input
           className="custom-file-selector"
           type="file"

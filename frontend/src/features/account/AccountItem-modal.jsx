@@ -6,6 +6,7 @@ import { HiPencil, HiTrash } from "react-icons/hi2";
 import UpdateAccountForm from "./UpdateAccountForm";
 import { useDeleteUser } from "./useDeleteUser";
 import getStoredAuthKey from "../../utils/getStoredAuthKey";
+import Modal from "../../ui/Modal";
 
 function AccountItem({ user }) {
   const authenticationKey = getStoredAuthKey();
@@ -28,20 +29,27 @@ function AccountItem({ user }) {
         ) : (
           <span>&mdash;</span>
         )} */}
+
         <div className="ml-auto flex gap-0.5">
-          <button
-            className="text-green-700"
-            onClick={() => setShowForm((show) => !show)}
-          >
-            <HiPencil />
-          </button>
-          <button
-            className="text-red-800"
-            onClick={() => deleteUser({ userID, authenticationKey })}
-            disabled={isDeleting}
-          >
-            <HiTrash />
-          </button>
+          <Modal>
+            <Modal.Open opens="user-form">
+              <button className="text-green-700">
+                <HiPencil />
+              </button>
+            </Modal.Open>
+
+            <Modal.Window name="user-form">
+              <UpdateAccountForm userToUpdate={user} />
+            </Modal.Window>
+
+            <button
+              className="text-red-800"
+              onClick={() => deleteUser({ userID, authenticationKey })}
+              disabled={isDeleting}
+            >
+              <HiTrash />
+            </button>
+          </Modal>
         </div>
       </div>
       {showForm && <UpdateAccountForm userToUpdate={user} />}

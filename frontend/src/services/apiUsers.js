@@ -12,7 +12,7 @@ export async function login(email, password) {
     }),
   });
 
-  // console.log(response);
+  console.log(response);
   if (!response.ok) throw Error("Failed logging in");
 
   const APIResponseObject = await response.json();
@@ -112,6 +112,8 @@ export async function updateUser({ user, authenticationKey }) {
     body: JSON.stringify(updatedFields), // Send the updated fields directly
   });
 
+  console.log(response);
+
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -153,14 +155,14 @@ export async function create(user, authenticationKey) {
   return postUserResult;
 }
 
-export async function deleteByID(userID, authenticationKey) {
+export async function deleteUser({ userID, authenticationKey }) {
   const response = await fetch(API_URL + "/users/" + userID, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "X-AUTH-KEY": authenticationKey,
     },
-    body: JSON.stringify({}),
+    // body: JSON.stringify({}),
   });
 
   const deleteResult = await response.json();
@@ -177,6 +179,7 @@ export async function registerUser(newUser) {
     body: JSON.stringify(newUser),
   });
 
+  console.log(response);
   const user = await response.json();
 
   return user;

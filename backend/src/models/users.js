@@ -1,4 +1,5 @@
 import { db } from '../database.js';
+import bcrypt from 'bcryptjs';
 
 export function newUser(
   id,

@@ -84,7 +84,7 @@ userController.get('/', auth(['admin', 'trainer']), async (req, res) => {
 
 userController.get('/:id', auth(['admin', 'trainer', 'member']), (req, res) => {
   const userID = req.params.id;
-  console.log(userID);
+  // console.log(userID);
 
   // TODO: Implement request validation
 

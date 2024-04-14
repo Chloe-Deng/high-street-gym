@@ -24,6 +24,7 @@ function HomePage() {
           <Button to="/classes" variation="primary">
             Start booking
           </Button>
+          {/* <button onClick={logout}>logout</button> */}
         </div>
       </section>
     </main>
