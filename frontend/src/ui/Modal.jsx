@@ -4,6 +4,7 @@ import { HiXMark } from "react-icons/hi2";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import Button from "./Button";
 
+// Compound component
 const ModalContext = createContext();
 
 function Modal({ children }) {

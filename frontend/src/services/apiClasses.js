@@ -55,10 +55,12 @@ export async function createClass({ newClass, authenticationKey }) {
         "X-AUTH-KEY": authenticationKey,
       },
     });
+    console.log(res);
 
     if (!res.ok) throw Error("Class could not be created");
 
     const { data } = await res.json();
+    console.log(data);
     return data;
   } catch {
     throw Error("Failed creating class");

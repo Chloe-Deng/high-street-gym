@@ -3,9 +3,12 @@ import { useCreatePost } from "./useCreatePost";
 
 import Button from "../../ui/Button";
 import FormRow from "../../ui/FormRow";
+// import { useAuth } from "../../contexts/AuthContext";
 // import CreateBlogForm from "./CreateBlogForm";
 
 function CreateBlog() {
+  // const { user } = useAuth();
+  // console.log(user);
   const { isCreating, createPost } = useCreatePost();
   const { register, handleSubmit, reset, formState } = useForm();
 
@@ -63,6 +66,7 @@ function CreateBlog() {
             className="input-square"
             type="text"
             id="author"
+            // defaultValue={user.firstName}
             disabled={isCreating}
             {...register("author", {
               required: "Author field is required",

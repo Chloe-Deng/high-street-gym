@@ -4,51 +4,79 @@ import { v4 as uuid4 } from 'uuid';
 import * as Users from '../models/users.js';
 import auth from '../middleware/auth.js';
 
-// TODO: Implement input validation
-
 const userController = Router();
 
-userController.post('/login', (req, res) => {
-  // access request body
-  let loginData = req.body;
+userController.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  // console.log(loginData);
+  console.log(email, password);
 
-  // TODO: Implement request validation
   if (!email || !password)
     return res
       .status(400)
       .json({ status: 'fail', message: 'Please provide email and password' });
 
-  console.log(email, password);
+  try {
+    const user = await Users.getByEmail(email);
+    console.log(user);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'User not found' });
+    }
 
-  Users.getByEmail(loginData.email)
-    .then((user) => {
-      if (bcrypt.compareSync(loginData.password, user.password)) {
-        user.authenticationKey = uuid4().toString();
+    const passwordIsValid = await bcrypt.compare(password, user.password);
+    console.log(passwordIsValid);
+    if (!passwordIsValid) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'Invalid credentials' });
+    }
 
-        Users.update(user).then((result) => {
-          res.status(200).json({
-            status: 200,
-            message: 'user logged in',
-            authenticationKey: user.authenticationKey,
-            user: user,
-          });
-        });
-      } else {
-        res.status(400).json({
-          status: 400,
-          message: 'invalid credentials',
-        });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({
-        status: 500,
-        message: 'login failed',
-      });
+    const authenticationKey = uuid4().toString();
+    user.authenticationKey = authenticationKey;
+
+    await Users.update(user);
+    res.status(201).json({
+      status: 'success',
+      message: 'User logged in',
+      authenticationKey,
+      user,
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred during login',
+    });
+  }
+
+  // Users.getByEmail(loginData.email)
+  //   .then((user) => {
+  //     if (bcrypt.compareSync(loginData.password, user.password)) {
+  //       user.authenticationKey = uuid4().toString();
+
+  //       Users.update(user).then((result) => {
+  //         res.status(200).json({
+  //           status: 200,
+  //           message: 'user logged in',
+  //           authenticationKey: user.authenticationKey,
+  //           user: user,
+  //         });
+  //       });
+  //     } else {
+  //       res.status(400).json({
+  //         status: 400,
+  //         message: 'invalid credentials',
+  //       });
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //     res.status(500).json({
+  //       status: 500,
+  //       message: 'login failed',
+  //     });
+  //   });
 });
 
 userController.post('/logout', (req, res) => {
@@ -128,7 +156,8 @@ userController.get('/authentication/:authenticationKey', (req, res) => {
 
 userController.post('/', auth(['admin']), (req, res) => {
   // Get the user data out of the request
-  const userData = req.body.user;
+  const userData = req.body;
+  console.log(userData);
 
   // TODO: Implement request validation
 

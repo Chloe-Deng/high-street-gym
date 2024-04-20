@@ -5,7 +5,7 @@ import { usePosts } from "./usePosts";
 
 function BlogList() {
   const { isLoading, posts } = usePosts();
-  console.log(posts);
+
   if (isLoading || !posts) return <Loader />;
 
   return (

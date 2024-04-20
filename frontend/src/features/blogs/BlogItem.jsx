@@ -21,7 +21,7 @@ function BlogItem({ post, accessRoles = ["admin", "trainer"] }) {
             onClick={() => deletePost({ postId, authenticationKey })}
             disabled={isDeleting}
           >
-            <HiTrash />
+            <HiTrash className="text-red-800" />
           </button>
         ) : (
           ""

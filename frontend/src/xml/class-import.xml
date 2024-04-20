@@ -2,12 +2,14 @@
 <!DOCTYPE class-upload [
     <!ELEMENT class-upload (classes)>
     <!ATTLIST class-upload operation (insert|update) "insert">
-    <!ELEMENT classes (class)>
-    <!ELEMENT class (activityName, startDate, startTime, locationName, trainerName, activityDuration, activityDescription)>
+    <!ELEMENT classes (class+)>
+    <!ELEMENT class (activityName, startDate, startTime, locationNames, trainerNames, activityDuration, activityDescription)>
     <!ELEMENT activityName (#PCDATA)>
     <!ELEMENT startDate (#PCDATA)>
     <!ELEMENT startTime (#PCDATA)>
+    <!ELEMENT locationNames (locationName+)>
     <!ELEMENT locationName (#PCDATA)>
+    <!ELEMENT trainerNames (trainerName+)>
     <!ELEMENT trainerName (#PCDATA)>
     <!ELEMENT activityDuration (#PCDATA)>
     <!ELEMENT activityDescription (#PCDATA)>
@@ -16,12 +18,19 @@
     <classes>
         <class>
             <activityName>Yoga</activityName>
-            <startDate>2024-04-09</startDate>
+            <startDate>2024-04-30</startDate>
             <startTime>08:00:00</startTime>
-            <locationName>South bank</locationName>
-            <trainerName>Josh user</trainerName>
+            <locationNames>
+                <locationName>South bank</locationName>
+                <locationName>Gold Coast</locationName>
+            </locationNames>
+            <trainerNames>
+                <trainerName>Josh User</trainerName>
+                <trainerName>John Doe</trainerName>
+            </trainerNames>
             <activityDuration>60</activityDuration>
-            <activityDescription>Good</activityDescription>
-        </class>
+            <activityDescription>A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>  
     </classes>
 </class-upload>
+

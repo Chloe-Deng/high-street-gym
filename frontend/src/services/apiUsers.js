@@ -12,7 +12,6 @@ export async function login(email, password) {
     }),
   });
 
-  console.log(response);
   if (!response.ok) throw Error("Failed logging in");
 
   const APIResponseObject = await response.json();
@@ -66,7 +65,6 @@ export async function getUserByID(userID, authenticationKey) {
     });
 
     if (!response.ok) {
-      // 可以根据不同的响应状态码抛出不同的错误
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to fetch user data.");
     }
@@ -140,15 +138,21 @@ export async function updateUser({ user, authenticationKey }) {
 //   return patchUserResult;
 // }
 
-export async function create(user, authenticationKey) {
+export async function createUser({ user, authenticationKey }) {
   const response = await fetch(API_URL + "/users", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-AUTH-KEY": authenticationKey,
     },
-    body: JSON.stringify({ user }),
+    body: JSON.stringify(user),
   });
+
+  if (!response.ok) {
+    const errorData = await response.text();
+
+    throw new Error(errorData || response.statusText || "Error creating user");
+  }
 
   const postUserResult = await response.json();
 
@@ -179,7 +183,6 @@ export async function registerUser(newUser) {
     body: JSON.stringify(newUser),
   });
 
-  console.log(response);
   const user = await response.json();
 
   return user;

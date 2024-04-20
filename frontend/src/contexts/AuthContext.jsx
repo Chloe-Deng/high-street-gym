@@ -38,46 +38,6 @@ function authReducer(state, action) {
 
 // 创建提供者组件
 function AuthProvider({ children }) {
-  // const [{ user, isAuthenticated, authenticationKey }, dispatch] = useReducer(
-  //   authReducer,
-  //   initialState,
-  // );
-
-  // useEffect(() => {
-  //   const authenticationKey = localStorage.getItem("authenticationKey");
-  //   if (authenticationKey) {
-  //     getByAuthenticationKey(authenticationKey)
-  //       .then((user) => {
-  //         dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
-  //       })
-  //       .catch(() => {
-  //         localStorage.removeItem("authenticationKey"); // 清除无效的认证密钥
-  //       });
-  //   }
-  // }, []);
-
-  // // 登录
-  // async function login(email, password) {
-  //   const { user, authenticationKey } = await apiLogin(email, password);
-  //   // console.log(user, authenticationKey);
-
-  //   localStorage.setItem("authenticationKey", authenticationKey);
-
-  //   console.log(user.id);
-  //   localStorage.setItem("userID", user.id);
-
-  //   dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
-  // }
-
-  // // 登出
-  // async function logout() {
-  //   if (user && user.authenticationKey) {
-  //     await apiLogout(user.authenticationKey);
-  //   }
-  //   localStorage.removeItem("authenticationKey");
-  //   dispatch({ type: "LOGOUT" });
-  // }
-
   const [{ user, isAuthenticated, authenticationKey }, dispatch] = useReducer(
     authReducer,
     initialState,
@@ -104,6 +64,7 @@ function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const { user, authenticationKey } = await apiLogin(email, password);
+      // console.log(user);
 
       if (!user || !authenticationKey) {
         throw new Error("Authentication failed");
@@ -114,7 +75,7 @@ function AuthProvider({ children }) {
 
       dispatch({ type: "LOGIN", payload: { user, authenticationKey } });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error.message);
       // Handle login error, such as displaying a message to the user
     }
   };
@@ -132,7 +93,6 @@ function AuthProvider({ children }) {
       dispatch({ type: "LOGOUT" });
     } catch (error) {
       console.error("Logout error:", error);
-      // Optionally handle logout error
     }
   };
 

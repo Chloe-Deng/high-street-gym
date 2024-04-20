@@ -15,6 +15,24 @@ export async function getBookings(authenticationKey) {
   return data;
 }
 
+export async function fetchBookings(authenticationKey) {
+  const res = await fetch(API_URL + "/bookings/bookings", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-AUTH-KEY": authenticationKey,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const { data } = await res.json();
+
+  return data;
+}
+
 export async function createBooking(bookingData) {
   try {
     const response = await fetch(`${API_URL}/bookings`, {

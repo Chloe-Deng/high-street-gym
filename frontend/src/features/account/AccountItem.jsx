@@ -10,6 +10,7 @@ import getStoredAuthKey from "../../utils/getStoredAuthKey";
 function AccountItem({ user }) {
   const authenticationKey = getStoredAuthKey();
   const { id: userID, firstName, lastName, email } = user;
+  // console.log(user);
   const { isDeleting, deleteUser } = useDeleteUser();
 
   const [showForm, setShowForm] = useState(false);

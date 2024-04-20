@@ -152,6 +152,49 @@ export async function update(user) {
     });
 }
 
+// export const updateUser = async (user) => {
+//   const fieldsToUpdate = [];
+//   const params = [];
+
+//   // 字段到数据库列的映射
+//   const fieldMapping = {
+//     email: 'email',
+//     password: 'password',
+//     role: 'role',
+//     firstName: 'first_name',
+//     lastName: 'last_name',
+//     authenticationKey: 'authentication_key',
+//   };
+
+//   // 动态构建更新语句的部分
+//   for (const [key, column] of Object.entries(fieldMapping)) {
+//     if (user[key] !== undefined) {
+//       fieldsToUpdate.push(`${column} = ?`);
+//       params.push(
+//         key === 'password' ? bcrypt.hashSync(user[key], 10) : user[key]
+//       );
+//     }
+//   }
+
+//   if (!fieldsToUpdate.length) {
+//     throw new Error('No fields provided for update.');
+//   }
+
+//   // 添加用户ID到参数数组末尾，用于WHERE子句
+//   params.push(user.id);
+//   const sql = `UPDATE users SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+
+//   try {
+//     const [result] = await db.query(sql, params);
+//     if (result.affectedRows === 0) {
+//       throw new Error('No user found with the given ID.');
+//     }
+//     return { ...user, updateStatus: 'success' };
+//   } catch (error) {
+//     throw new Error(`Failed to update user: ${error.message}`);
+//   }
+// };
+
 export const updateUser = async (user) => {
   const fieldsToUpdate = [];
   const params = [];
@@ -159,21 +202,25 @@ export const updateUser = async (user) => {
   // 字段到数据库列的映射
   const fieldMapping = {
     email: 'email',
-    password: 'password',
+    // 不要在这里映射密码，我们稍后处理密码
     role: 'role',
     firstName: 'first_name',
     lastName: 'last_name',
     authenticationKey: 'authentication_key',
   };
 
-  // 动态构建更新语句的部分
+  // 动态构建更新语句的部分，除了密码
   for (const [key, column] of Object.entries(fieldMapping)) {
     if (user[key] !== undefined) {
       fieldsToUpdate.push(`${column} = ?`);
-      params.push(
-        key === 'password' ? bcrypt.hashSync(user[key], 10) : user[key]
-      );
+      params.push(user[key]);
     }
+  }
+
+  // 特别处理密码，确保它不为空
+  if (user.password && user.password.trim() !== '') {
+    fieldsToUpdate.push('password = ?');
+    params.push(bcrypt.hashSync(user.password, 10));
   }
 
   if (!fieldsToUpdate.length) {

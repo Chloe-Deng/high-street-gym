@@ -78,14 +78,15 @@ classController.get('/:id', async (req, res) => {
 classController.post('/', auth(['admin', 'trainer']), async (req, res) => {
   // Get the class data out of the request
   const classData = req.body;
+  console.log(classData);
 
   // Implement request validation
   if (
     !classData.activityName ||
     !classData.startDate ||
     !classData.startTime ||
-    !classData.locationName ||
-    !classData.trainerName
+    !classData.locationNames ||
+    !classData.trainerNames
   ) {
     return res.status(400).json({
       status: 400,

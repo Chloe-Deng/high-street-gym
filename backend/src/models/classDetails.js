@@ -8,8 +8,8 @@ export function classDetail(
   activityDuration,
   startDate,
   startTime,
-  locationName,
-  trainerName
+  locationNames,
+  trainerNames
 ) {
   return {
     classId,
@@ -18,30 +18,38 @@ export function classDetail(
     activityDuration,
     startDate,
     startTime,
-    locationName,
-    trainerName,
+    locationNames,
+    trainerNames,
   };
 }
 
 export async function getClassDetails() {
   const query = `
-    SELECT 
+  SELECT 
         cl.id AS class_id,
         act.activity_name,
         act.activity_description,
         act.activity_duration,
-        cl.datetime,
-        cl.start_at,
-        loc.location_name,
-        CONCAT(tr.first_name, ' ', tr.last_name) AS trainer_name
+        cl.datetime AS start_date,
+        cl.start_at AS start_time,
+        GROUP_CONCAT(DISTINCT loc.location_name SEPARATOR ', ') AS location_names,
+        GROUP_CONCAT(DISTINCT CONCAT(tr.first_name, ' ', tr.last_name) SEPARATOR ', ') AS trainer_names
     FROM 
         classes cl
         INNER JOIN activities act ON cl.activity_id = act.activity_id
-        INNER JOIN locations loc ON cl.location_id = loc.id
-        INNER JOIN users tr ON cl.trainer_id = tr.id
-    WHERE 
-        tr.role = 'trainer';
-    `;
+        LEFT JOIN class_locations clloc ON cl.id = clloc.class_id
+        LEFT JOIN locations loc ON clloc.location_id = loc.id
+        LEFT JOIN class_trainers cltr ON cl.id = cltr.class_id
+        LEFT JOIN users tr ON cltr.trainer_id = tr.id AND tr.role = 'trainer'
+    GROUP BY 
+        cl.id,
+        act.activity_name,
+        act.activity_description,
+        act.activity_duration,
+        cl.datetime,
+        cl.start_at
+    
+`;
 
   try {
     const [rows] = await db.query(query);
@@ -51,10 +59,10 @@ export async function getClassDetails() {
         row.activity_name,
         row.activity_description,
         row.activity_duration,
-        row.datetime,
-        row.start_at,
-        row.location_name,
-        row.trainer_name
+        row.start_date,
+        row.start_time,
+        row.location_names,
+        row.trainer_names
       )
     );
   } catch (error) {
@@ -63,48 +71,49 @@ export async function getClassDetails() {
 }
 
 export async function getClass(classID) {
-  try {
-    const [rows] = await db.query(
-      `
-    SELECT
+  const query = `
+    SELECT 
       cl.id AS classId,
       act.activity_name AS activityName,
       act.activity_description AS activityDescription,
       act.activity_duration AS activityDuration,
       cl.datetime AS startDate,
       cl.start_at AS startTime,
-      loc.location_name AS locationName,
-      CONCAT(tr.first_name, ' ', tr.last_name) AS trainerName
-    FROM
+      GROUP_CONCAT(DISTINCT loc.location_name SEPARATOR ', ') AS locationNames,
+      GROUP_CONCAT(DISTINCT CONCAT(tr.first_name, ' ', tr.last_name) SEPARATOR ', ') AS trainerNames
+    FROM 
       classes cl
-    INNER JOIN activities act ON cl.activity_id = act.activity_id
-    INNER JOIN locations loc ON cl.location_id = loc.id
-    INNER JOIN users tr ON cl.trainer_id = tr.id
-    WHERE cl.id = ? AND tr.role = 'trainer'
-  `,
-      [classID]
-    );
+      INNER JOIN activities act ON cl.activity_id = act.activity_id
+      LEFT JOIN class_locations clloc ON cl.id = clloc.class_id
+      LEFT JOIN locations loc ON clloc.location_id = loc.id
+      LEFT JOIN class_trainers cltr ON cl.id = cltr.class_id
+      LEFT JOIN users tr ON cltr.trainer_id = tr.id AND tr.role = 'trainer'
+    WHERE 
+      cl.id = ?
+    GROUP BY 
+      cl.id, act.activity_name, act.activity_description, act.activity_duration, cl.datetime, cl.start_at
+  `;
 
+  try {
+    const [rows] = await db.query(query, [classID]);
     if (rows.length > 0) {
       const classInfo = rows[0];
-      return Promise.resolve(
-        classDetail(
-          classInfo.classId,
-          classInfo.activityName,
-          classInfo.activityDescription,
-          classInfo.activityDuration,
-          classInfo.startDate,
-          classInfo.startTime,
-          classInfo.locationName,
-          classInfo.trainerName
-        )
+      return classDetail(
+        classInfo.classId,
+        classInfo.activityName,
+        classInfo.activityDescription,
+        classInfo.activityDuration,
+        classInfo.startDate,
+        classInfo.startTime,
+        classInfo.locationNames,
+        classInfo.trainerNames
       );
     } else {
-      return Promise.reject(new Error('No class found with the given ID.'));
+      throw new Error('No class found with the given ID.');
     }
   } catch (error) {
     console.error('Error fetching class details by ID:', error);
-    return Promise.reject(error);
+    throw error; // Better error propagation
   }
 }
 
@@ -268,6 +277,106 @@ export async function createClass(newClassInfo) {
     activityName,
     startDate,
     startTime,
+    activityDuration,
+    activityDescription,
+  } = newClassInfo;
+
+  // 首先创建或更新活动
+  const activityId = await createOrUpdateActivity(
+    activityName,
+    activityDuration,
+    activityDescription
+  );
+
+  // 插入新的class记录
+  const classSql = `
+    INSERT INTO classes (activity_id, datetime, start_at) 
+    VALUES (?, ?, ?)
+  `;
+  const [classResult] = await db.query(classSql, [
+    activityId,
+    startDate,
+    startTime,
+  ]);
+  const classId = classResult.insertId;
+
+  // 插入新的 class 记录后，获取 location names 和 trainer names
+  const [locationRecords] = await db.query(
+    `
+    SELECT l.location_name
+    FROM class_locations cl
+    JOIN locations l ON cl.location_id = l.id
+    WHERE cl.class_id = ?
+  `,
+    [classId]
+  );
+
+  const [trainerRecords] = await db.query(
+    `
+    SELECT CONCAT(u.first_name, ' ', u.last_name) AS trainer_name
+    FROM class_trainers ct
+    JOIN users u ON ct.trainer_id = u.id
+    WHERE ct.class_id = ?
+  `,
+    [classId]
+  );
+
+  // 将结果映射到数组中
+  const locationNames = locationRecords.map((l) => l.location_name);
+  const trainerNames = trainerRecords.map((t) => t.trainer_name);
+
+  // 现在你需要为这个class创建关联的locations和trainers
+  // 这将涉及向class_locations和class_trainers表中插入数据
+
+  // 例如，你可能会有一个函数来处理这些插入
+  await linkClassWithLocationAndTrainer(classId, newClassInfo);
+
+  return {
+    classId: classId,
+    activityName,
+    startDate,
+    startTime,
+    activityDuration,
+    activityDescription,
+    locationNames, // 新加的地点名称数组
+    trainerNames, // 新加的教练名称数组
+  };
+}
+
+// 示例函数，你需要根据自己的逻辑来实现
+async function linkClassWithLocationAndTrainer(
+  classId,
+  { locationNames, trainerNames }
+) {
+  // 假设locationNames和trainerNames是数组
+
+  for (const locationName of locationNames) {
+    const locationId = await findLocationIdByName(locationName);
+    if (locationId) {
+      await db.query(
+        `INSERT INTO class_locations (class_id, location_id) VALUES (?, ?)`,
+        [classId, locationId]
+      );
+    }
+  }
+
+  for (const trainerName of trainerNames) {
+    const trainerId = await findTrainerIdByName(trainerName);
+    if (trainerId) {
+      await db.query(
+        `INSERT INTO class_trainers (class_id, trainer_id) VALUES (?, ?)`,
+        [classId, trainerId]
+      );
+    }
+  }
+}
+
+/*
+export async function createClass(newClassInfo) {
+  const {
+    activityName,
+    startDate,
+    startTime,
     locationName,
     trainerName,
     activityDuration,
@@ -311,6 +420,7 @@ export async function createClass(newClassInfo) {
     activityDescription,
   };
 }
+*/
 
 export async function deleteClass(classId) {
   // 构建删除特定class记录的SQL语句

@@ -25,12 +25,18 @@ function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
   // const isWorking = isCreating || isEditing;
 
   function onSubmit(data) {
+    const {
+      authenticationKey: currentUpdatedUserAuthKey,
+      password,
+      ...updateData
+    } = data;
     const authenticationKey = getStoredAuthKey();
-    // console.log(editId);
+    console.log(editId);
+    console.log(updateData);
 
     if (isEditSession)
       updateUser(
-        { user: { ...data, id: editId }, authenticationKey }, // 包含所有更新的字段和用户ID
+        { user: { ...updateData, id: editId }, authenticationKey }, // 包含所有更新的字段和用户ID
 
         // {
         //   onSuccess: (data) => {
@@ -69,6 +75,16 @@ function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
           id="email"
           disabled={isUpdating}
           {...register("email")}
+        />
+      </FormRow>
+
+      <FormRow label="Role" error={errors?.role?.message}>
+        <input
+          className="input-square"
+          type="role"
+          id="role"
+          disabled={isUpdating}
+          {...register("role")}
         />
       </FormRow>
 

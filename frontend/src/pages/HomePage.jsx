@@ -14,7 +14,7 @@ function HomePage() {
         <h2 className="text-[1.2rem] font-medium text-amber-400 sm:text-[1.4rem] sm:font-semibold">
           High Street Gym keeps boost of your body.
         </h2>
-        <h2 className="mb-4 text-[1.1rem] text-zinc-50 sm:text-[1.2rem]">
+        <h2 className="mb-4 px-4 text-[1.1rem] text-zinc-50 sm:text-[1.2rem]">
           Elevate your fitness in a space where each workout turns potential
           into progress. Join us on the path to peak power.
           <br />

@@ -6,7 +6,7 @@ function NavListItem({ to, icon: Icon, label }) {
       <NavLink
         to={to}
         className={({ isActive }) =>
-          `flex flex-col items-center gap-1 transition-all duration-300 ${
+          `flex cursor-pointer flex-col items-center gap-1 transition-all duration-300 ${
             isActive ? "text-amber-500" : "hover:text-amber-500"
           }`
         }

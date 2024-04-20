@@ -7,7 +7,7 @@ function LoginForm() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("admin2@email.com");
+  const [email, setEmail] = useState("chloe@email.com");
   const [password, setPassword] = useState("pass1234");
 
   function handleSubmit(e) {

@@ -1,6 +1,6 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Button from "../../ui/Button";
+// import Button from "../../ui/Button";
 import {
   HiOutlineArrowRightOnRectangle,
   HiOutlineUserCircle,
@@ -8,8 +8,8 @@ import {
 
 function UserName() {
   const { user, isAuthenticated, logout } = useAuth();
-  // console.log(user);
-  console.log(isAuthenticated);
+
+  // console.log(isAuthenticated);
 
   const navigate = useNavigate();
 
@@ -41,9 +41,10 @@ function UserName() {
           </button>
         </div>
       ) : (
-        <Button variation="small" to={"/login"}>
-          Login
-        </Button>
+        // <Button variation="small" to={"/login"}>
+        //   Login
+        // </Button>
+        ""
       )}
     </div>
   );

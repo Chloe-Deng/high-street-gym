@@ -13,7 +13,7 @@ function SignUpForm() {
   function onSubmit(data) {
     registerUser(data, {
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
         reset();
       },
     });

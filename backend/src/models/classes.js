@@ -1,4 +1,4 @@
-import { db } from "../database.js";
+import { db } from '../database.js';
 
 // Class model (object) constructor
 export function newClass(
@@ -9,7 +9,7 @@ export function newClass(
   duration,
   description,
   locationID,
-  trainerID,
+  trainerID
 ) {
   return {
     id,
@@ -25,9 +25,7 @@ export function newClass(
 
 export async function getClasses() {
   // Get the collection of all animals
-  const [allClassesResults] = await db.query("SELECT * FROM classes");
-
-  console.log(allClassesResults);
+  const [allClassesResults] = await db.query('SELECT * FROM classes');
 
   // Convert the collection of results into a list of Animal objects
   return await allClassesResults.map((classResult) =>
@@ -39,14 +37,14 @@ export async function getClasses() {
       classResult.duration,
       classResult.description,
       classResult.location_id,
-      classResult.trainer_id,
-    ),
+      classResult.trainer_id
+    )
   );
 }
 
 export async function getClass(classID) {
   try {
-    const [rows] = await db.query("SELECT * FROM classes WHERE id = ?", [
+    const [rows] = await db.query('SELECT * FROM classes WHERE id = ?', [
       classID,
     ]);
     if (rows.length > 0) {
@@ -61,15 +59,15 @@ export async function getClass(classID) {
           classResult.duration,
           classResult.description,
           classResult.location_id,
-          classResult.trainer_id,
-        ),
+          classResult.trainer_id
+        )
       );
     } else {
       // 使用 Promise.reject 返回被拒绝的 Promise
-      return Promise.reject("No class found with the given ID.");
+      return Promise.reject('No class found with the given ID.');
     }
   } catch (error) {
-    console.error("Error fetching class by ID:", error);
+    console.error('Error fetching class by ID:', error);
     // 直接抛出错误，让调用者决定如何处理
     return Promise.reject(error.message);
   }
@@ -82,7 +80,7 @@ export async function createClass(newClass) {
   try {
     // 插入课程对象到数据库
     const [result] = await db.query(
-      "INSERT INTO classes (class_name, datetime, start_at, duration, description, location_id, trainer_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      'INSERT INTO classes (class_name, datetime, start_at, duration, description, location_id, trainer_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [
         newClass.className,
         newClass.datetime,
@@ -91,19 +89,19 @@ export async function createClass(newClass) {
         newClass.description,
         newClass.locationID,
         newClass.trainerID,
-      ],
+      ]
     );
 
     // 将数据库生成的id注入到课程对象中并返回
     return { ...newClass, id: result.insertId };
   } catch (error) {
     // 处理可能发生的任何错误
-    console.error("Error creating new class:", error);
+    console.error('Error creating new class:', error);
     // 在这里可以决定是否要处理错误或者将其抛出给调用者
     throw error;
   }
 }
 
 export async function deleteByID(classID) {
-  return db.query("DELETE FROM classes WHERE id = ?", classID);
+  return db.query('DELETE FROM classes WHERE id = ?', classID);
 }

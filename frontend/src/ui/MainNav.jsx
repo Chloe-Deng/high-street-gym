@@ -7,11 +7,7 @@ import {
   HiCloudArrowUp,
 } from "react-icons/hi2";
 
-// import { useAuth } from "../contexts/AuthContext";
-
 function MainNav() {
-  // const { isAuthenticated, user } = useAuth();
-
   // Navigation links configuration
   const navLinks = [
     { to: "/classes", icon: HiOutlineHome, label: "Classes" },

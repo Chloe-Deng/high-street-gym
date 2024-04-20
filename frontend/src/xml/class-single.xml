@@ -1,0 +1,36 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE class-upload [
+    <!ELEMENT class-upload (classes)>
+    <!ATTLIST class-upload operation (insert|update) "insert">
+    <!ELEMENT classes (class+)>
+    <!ELEMENT class (activityName, startDate, startTime, locationName, trainerName, activityDuration, activityDescription)>
+    <!ELEMENT activityName (#PCDATA)>
+    <!ELEMENT startDate (#PCDATA)>
+    <!ELEMENT startTime (#PCDATA)>
+    <!ELEMENT locationName (#PCDATA)>
+    <!ELEMENT trainerName (#PCDATA)>
+    <!ELEMENT activityDuration (#PCDATA)>
+    <!ELEMENT activityDescription (#PCDATA)>
+]>
+<class-upload operation="insert">
+    <classes>
+        <class>
+            <activityName>Yoga</activityName>
+            <startDate>2024-04-20</startDate>
+            <startTime>08:00:00</startTime>
+            <locationName>South bank, Gold Coast</locationName>
+            <trainerName>Josh user</trainerName>
+            <activityDuration>60</activityDuration>
+            <activityDescription> A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>
+        <class>
+            <activityName>Yoga</activityName>
+            <startDate>2024-04-21</startDate>
+            <startTime>08:00:00</startTime>
+            <locationName>South bank</locationName>
+            <trainerName>Austin user</trainerName>
+            <activityDuration>60</activityDuration>
+            <activityDescription> A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>
+    </classes>
+</class-upload> -->
