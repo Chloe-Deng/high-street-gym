@@ -11,20 +11,6 @@ function CreateBlogForm({ isCreating, onSubmit }) {
     reset();
   };
 
-  // function onSubmit(data) {
-  //   const postData = {
-  //     postTitle: data.title,
-  //     postContent: data.content,
-  //     userName: data.author, // 确保后端通过userName查找用户ID
-  //   };
-  //   // console.log(postData);
-  //   createPost(postData, {
-  //     onSuccess: (data) => {
-  //       reset();
-  //     },
-  //   });
-  // }
-
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}

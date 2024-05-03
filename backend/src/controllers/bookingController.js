@@ -25,7 +25,7 @@ bookingController.get(
     try {
       // Get user ID from the authenticated user object
       const userId = req.user.id;
-      console.log(userId);
+      // console.log(userId);
 
       // Call your function to get bookings for this member
       const bookings = await Bookings.getBookingsByMember(userId);
@@ -53,6 +53,7 @@ bookingController.get(
 
     try {
       const bookings = await Bookings.getConditionalBookings(userId, role);
+      console.log(bookings);
       res.json({ status: 'success', data: bookings });
     } catch (error) {
       res.status(500).send({ status: 'error', message: error.message });

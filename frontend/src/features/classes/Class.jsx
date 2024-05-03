@@ -1,35 +1,42 @@
-import LinkButton from "../../ui/LinkButton";
 import { useParams } from "react-router-dom";
+import { Controller, useForm } from "react-hook-form";
 
-// import { useClass } from "./useClass";
-import Loader from "../../ui/Loader";
-// import { useQuery } from "@tanstack/react-query";
-// import { getClass } from "../../services/apiClasses";
-import Button from "../../ui/Button";
 import { useClass } from "./useClass";
-import FormRow from "../../ui/FormRow";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCreateBooking } from "../bookings/useCreateBooking";
-import { useForm } from "react-hook-form";
+import { useLocations } from "./useLocations";
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { formatUtcDateWithOffset } from "../../utils/helpers";
+import Loader from "../../ui/Loader";
+import Button from "../../ui/Button";
+import LinkButton from "../../ui/LinkButton";
+import FormRow from "../../ui/FormRow";
+import { useMemo } from "react";
 
 function Class() {
   const { id } = useParams();
-  // console.log(id);
-
   const { user } = useAuth();
   const { firstName, lastName } = user;
-
   const { isCreating, createBooking } = useCreateBooking();
-  const { register, handleSubmit, formState } = useForm();
 
-  // const { errors } = formState;
+  const { register, handleSubmit, control, watch } = useForm({
+    defaultValues: {
+      trainerName: "",
+    },
+  });
+
+  const selectedTrainer = watch("trainerName");
+  const selectedLocation = watch("locationName");
+
+  // const { isLocationsLoading, locations } =
+  //   useLocationsByTrainer(selectedTrainer);
+  const { isLoadingLocations, locations } = useLocations(selectedTrainer, id);
 
   function onSubmit(data) {
     // console.log(postData);
     createBooking(data, {
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
       },
     });
   }
@@ -42,27 +49,19 @@ function Class() {
 
   const { classData, isLoading } = useClass(id);
 
+  const trainerLocations = useMemo(() => {
+    if (!classData || !classData?.trainerNames || !locations?.length) return [];
+    const trainerOptions = classData.trainerNames.split(", ");
+    const trainerIndex = trainerOptions.findIndex((t) => t === selectedTrainer);
+    if (locations[trainerIndex]) return [locations[trainerIndex]];
+    return [locations[0]];
+  }, [selectedTrainer, classData, locations]);
+
   if (isLoading || !classData) return <Loader />;
 
-  const { activityName, startDate, startTime, locationNames, trainerNames } =
-    classData;
-
-  const locationOptions = locationNames.split(", ");
+  const { activityName, startDate, startTime, trainerNames } = classData;
+  // const locationOptions = locationNames.split(", ");
   const trainerOptions = trainerNames.split(", ");
-
-  const date = new Date(startDate);
-
-  // Add one day
-  date.setUTCDate(date.getUTCDate() + 1);
-
-  // Extract the UTC date parts
-  const yyyy = date.getUTCFullYear();
-  const mm = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed, add 1
-  const dd = String(date.getUTCDate()).padStart(2, "0");
-
-  // Format is 'YYYY-MM-DD'
-  const formattedDate = `${yyyy}-${mm}-${dd}`;
-  // console.log(formattedDate);
 
   return (
     <div className="mt-5">
@@ -102,7 +101,7 @@ function Class() {
               type="text"
               name="startDate"
               readOnly
-              defaultValue={formattedDate}
+              defaultValue={formatUtcDateWithOffset(startDate)}
               required
               {...register("startDate")}
             />
@@ -121,16 +120,63 @@ function Class() {
           </FormRow>
 
           <FormRow>
+            <Controller
+              control={control}
+              name="trainerName"
+              render={({ field }) => (
+                <select
+                  className="w-full rounded-md border border-zinc-200 px-2.5 py-3 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
+                  disabled={!!selectedLocation}
+                  {...field}
+                >
+                  <option value="" disabled>
+                    Available trainers
+                  </option>
+                  {trainerOptions?.map((trainer, index) => (
+                    <option key={index} value={trainer}>
+                      {trainer}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+          </FormRow>
+
+          <FormRow>
+            <select
+              className="w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
+              name="locationName"
+              required
+              defaultValue=""
+              {...register("locationName")}
+            >
+              <option value="" disabled>
+                Available locations
+              </option>
+              {isLoadingLocations ? (
+                <option>Loading locations...</option>
+              ) : (
+                trainerLocations?.map((location) => (
+                  <option key={location.id} value={location.location_name}>
+                    {location.location_name}
+                  </option>
+                ))
+              )}
+            </select>
+          </FormRow>
+
+          {/* <FormRow>
             <select
               className="w-full rounded-md border border-zinc-200 px-2.5 py-3 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
               name="trainerName"
               required
+              defaultValue=""
               {...register("trainerName")}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Available trainers
-              </option>{" "}
-              {/* This is your placeholder option */}
+              </option>
+              
               {trainerOptions.map((trainer, index) => (
                 <option key={index} value={trainer}>
                   {trainer}
@@ -144,22 +190,25 @@ function Class() {
               className="w-full rounded-md border border-zinc-200 p-2.5 text-base transition-all duration-300 placeholder:text-zinc-400 focus:outline-none focus:ring focus:ring-amber-400"
               name="locationName"
               required
+              defaultValue=""
               {...register("locationName")}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 Available locations
-              </option>{" "}
-              {/* This is your placeholder option */}
+              </option>
+            
               {locationOptions.map((location, index) => (
                 <option key={index} value={location}>
                   {location}
                 </option>
               ))}
             </select>
-          </FormRow>
+          </FormRow> */}
 
-          <div className="mt-4 flex justify-center gap-1">
-            <Button variation="primary">Book</Button>
+          <div className="mb-5 mt-4 flex justify-center gap-1">
+            <Button variation="primary" disabled={isCreating}>
+              Book
+            </Button>
             <Button variation="secondary" onClick={handleClick}>
               Back
             </Button>

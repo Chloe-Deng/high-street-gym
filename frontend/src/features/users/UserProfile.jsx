@@ -11,7 +11,6 @@ import toast from "react-hot-toast";
 
 function UserProfile() {
   const userID = localStorage.getItem("userID");
-  console.log(userID);
   const authenticationKey = getStoredAuthKey();
   const { userData = {}, isLoading } = useUser(userID);
   const { firstName, lastName, email } = userData;
@@ -37,32 +36,6 @@ function UserProfile() {
   };
 
   if (isLoading) return <Loader />;
-
-  // const onSubmit = (data) => {
-  //   // Only update if the user changes the information
-  //   if (
-  //     (data.firstName !== firstName ||
-  //       data.lastName !== lastName ||
-  //       data.email !== email ||
-  //       data.password) &&
-  //     userData.id
-  //   ) {
-  //     // Create the payload including the user's ID
-  //     const payload = {
-  //       user: {
-  //         id: userData.id, // Ensure userData includes id
-  //         ...data,
-  //       },
-
-  //       authenticationKey: authenticationKey,
-  //     };
-
-  //     // Call the updateUser function with the payload
-  //     updateUser(payload);
-  //   } else {
-  //     console.error("No changes detected or user ID is undefined.");
-  //   }
-  // };
 
   const onSubmit = (data) => {
     // Check if there are any changes to the user data
@@ -123,9 +96,9 @@ function UserProfile() {
                 message: "First name must be fewer than 50 characters",
               },
               pattern: {
-                value: /^[A-Za-z\s'-]+$/,
+                value: /^[A-Za-z0-9\s'-]+$/,
                 message:
-                  "First name must only contain letters, spaces, or hyphens",
+                  "First name must only contain letters, numbers, spaces, or hyphens",
               },
             })}
           />

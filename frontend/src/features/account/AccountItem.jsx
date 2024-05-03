@@ -6,14 +6,18 @@ import { HiPencil, HiTrash } from "react-icons/hi2";
 import UpdateAccountForm from "./UpdateAccountForm";
 import { useDeleteUser } from "./useDeleteUser";
 import getStoredAuthKey from "../../utils/getStoredAuthKey";
+import { useAuth } from "../../contexts/AuthContext";
 
-function AccountItem({ user }) {
+function AccountItem({ user, accessRole = ["admin"] }) {
   const authenticationKey = getStoredAuthKey();
+  const { user: currentUser } = useAuth();
   const { id: userID, firstName, lastName, email } = user;
   // console.log(user);
   const { isDeleting, deleteUser } = useDeleteUser();
 
   const [showForm, setShowForm] = useState(false);
+
+  const userIsAuthorized = currentUser && accessRole.includes(currentUser.role);
 
   return (
     <>
@@ -36,13 +40,18 @@ function AccountItem({ user }) {
           >
             <HiPencil />
           </button>
-          <button
-            className="text-red-800"
-            onClick={() => deleteUser({ userID, authenticationKey })}
-            disabled={isDeleting}
-          >
-            <HiTrash />
-          </button>
+
+          {userIsAuthorized ? (
+            <button
+              className="text-red-800"
+              onClick={() => deleteUser({ userID, authenticationKey })}
+              disabled={isDeleting}
+            >
+              <HiTrash />
+            </button>
+          ) : (
+            ""
+          )}
         </div>
       </div>
       {showForm && <UpdateAccountForm userToUpdate={user} />}

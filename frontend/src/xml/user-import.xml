@@ -13,17 +13,17 @@
 <user-upload operation="insert">
     <users>
         <user>
-            <email>trainer3@email.com</email>
+            <email>emily@email.com</email>
             <password>pass1234</password>
             <role>trainer</role>
-            <firstName>Josh</firstName>
-            <lastName>Gao</lastName>
+            <firstName>Emily</firstName>
+            <lastName>Lin</lastName>
         </user>
         <!-- <user>
-            <email>john.doe@example.com</email>
+            <email>andy@email.com</email>
             <password>pass1234</password>
             <role>trainer</role>
-            <firstName>John</firstName>
+            <firstName>Andy</firstName>
             <lastName>Doe</lastName>
         </user> -->
     </users>

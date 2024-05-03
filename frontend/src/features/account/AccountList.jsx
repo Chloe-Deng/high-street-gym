@@ -29,12 +29,6 @@ function AccountList() {
       </div>
     </>
   );
-
-  // return (
-  //   <ul className="mt-3 divide-y divide-zinc-200 border-b">
-
-  //   </ul>
-  // );
 }
 
 export default AccountList;

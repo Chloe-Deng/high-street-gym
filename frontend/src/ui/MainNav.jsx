@@ -1,3 +1,4 @@
+import { useAuth } from "../contexts/AuthContext";
 import NavListItem from "./NavListItem";
 import {
   HiOutlineHome,
@@ -8,19 +9,36 @@ import {
 } from "react-icons/hi2";
 
 function MainNav() {
-  // Navigation links configuration
+  const { user } = useAuth();
+
   const navLinks = [
     { to: "/classes", icon: HiOutlineHome, label: "Classes" },
     { to: "/bookings", icon: HiOutlineCalendarDays, label: "Bookings" },
     { to: "/blog", icon: HiOutlineBookOpen, label: "Blog" },
-    { to: "/upload_xml", icon: HiCloudArrowUp, label: "Upload" },
-    { to: "/account", icon: HiOutlineUsers, label: "Accounts" },
+    {
+      to: "/upload_xml",
+      icon: HiCloudArrowUp,
+      label: "Upload",
+      roles: ["member"],
+    },
+    {
+      to: "/account",
+      icon: HiOutlineUsers,
+      label: "Accounts",
+      roles: ["member"],
+    },
   ];
+
+  const filteredNavLinks = navLinks.filter((link) => {
+    return (
+      !link.roles || !link.roles.includes("member") || user.role !== "member"
+    );
+  });
 
   return (
     <nav className="flex items-center justify-center bg-zinc-800 px-4 py-2 text-sm uppercase text-zinc-200 sm:px-6 md:text-base">
       <ul className="flex items-center gap-5 md:gap-8">
-        {navLinks.map((link) => (
+        {filteredNavLinks?.map((link) => (
           <NavListItem
             key={link.to}
             to={link.to}

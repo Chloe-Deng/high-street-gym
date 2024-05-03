@@ -7,10 +7,11 @@ function ClassItem({ course }) {
     activityName,
     startTime,
     activityDuration,
-    trainerNames,
-    locationNames,
+    // trainerNames,
+    // locationNames,
   } = course;
-  console.log(course);
+
+  // console.log(course);
 
   return (
     <li className="flex gap-4 py-2">
@@ -19,13 +20,13 @@ function ClassItem({ course }) {
         <p className="text-sm capitalize italic text-stone-500">
           Time: {startTime}
         </p>
-        <p className="text-sm capitalize italic text-stone-500">
+        {/* <p className="text-sm capitalize italic text-stone-500">
           Trainer: {trainerNames}
-        </p>
+        </p> */}
 
-        <p className="text-sm capitalize italic text-stone-500">
+        {/* <p className="text-sm capitalize italic text-stone-500">
           Location: {locationNames}
-        </p>
+        </p> */}
 
         <div className="mt-auto flex items-center justify-between">
           <p className="text-sm capitalize italic text-stone-600">

@@ -6,28 +6,16 @@ import { useUser } from "../account/useUser";
 import { useUpdateUser } from "./useUpdateUser";
 import Loader from "../../ui/Loader";
 import { useMoveBack } from "../../hooks/useMoveBack";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 
 function UserProfile() {
   const userID = localStorage.getItem("userID");
-  console.log(userID);
+
   const authenticationKey = getStoredAuthKey();
   const { userData = {}, isLoading } = useUser(userID);
   const { firstName, lastName, email } = userData;
 
   const { isUpdating, updateUser } = useUpdateUser();
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   defaultValues: {
-  //     firstName,
-  //     lastName,
-  //     email,
-  //   },
-  // });
 
   const moveBack = useMoveBack();
   const handleClick = (e) => {
@@ -36,34 +24,6 @@ function UserProfile() {
   };
 
   if (isLoading) return <Loader />;
-
-  // const onSubmit = (data) => {
-  //   console.log(data);
-  //   // 只在数据变更时更新
-  //   if (
-  //     (data.firstName !== firstName ||
-  //       data.lastName !== lastName ||
-  //       data.email !== email) &&
-  //     userData.id
-  //   ) {
-  //     // Create the payload including the user's ID
-  //     const payload = {
-  //       user: {
-  //         id: userData.id, // Ensure userData includes id
-  //         ...data,
-  //       },
-
-  //       authenticationKey: authenticationKey,
-  //     };
-
-  //     console.log(payload);
-
-  //     // Call the updateUser function with the payload
-  //     updateUser(payload);
-  //   } else {
-  //     console.error("No changes detected or user ID is undefined.");
-  //   }
-  // };
 
   function handleUpdate(e, field) {
     const { value } = e.target;

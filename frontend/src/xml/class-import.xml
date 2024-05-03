@@ -16,21 +16,91 @@
 ]>
 <class-upload operation="insert">
     <classes>
-        <class>
-            <activityName>Yoga</activityName>
-            <startDate>2024-04-30</startDate>
-            <startTime>08:00:00</startTime>
+        <!-- <class>
+            <activityName>Pilates</activityName>
+            <startDate>2024-04-25</startDate>
+            <startTime>14:00:00</startTime>
             <locationNames>
-                <locationName>South bank</locationName>
-                <locationName>Gold Coast</locationName>
+                <locationName>South bank</locationName>            
+                <locationName>Chermside</locationName>            
             </locationNames>
             <trainerNames>
-                <trainerName>Josh User</trainerName>
-                <trainerName>John Doe</trainerName>
+                <trainerName>Wilson Ren</trainerName>
+                <trainerName>Reece Doe</trainerName>
+            </trainerNames>
+            <activityDuration>60</activityDuration>
+            <activityDescription>A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>   -->
+        <!-- <class>
+            <activityName>HIIT</activityName>
+            <startDate>2024-04-26</startDate>
+            <startTime>14:00:00</startTime>
+            <locationNames>
+                <locationName>South bank</locationName>                
+            </locationNames>
+            <trainerNames>
+                <trainerName>Wilson Ren</trainerName>
+                <trainerName>Reece Doe</trainerName>
             </trainerNames>
             <activityDuration>60</activityDuration>
             <activityDescription>A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
         </class>  
+        <class>
+            <activityName>Pilates</activityName>
+            <startDate>2024-04-27</startDate>
+            <startTime>14:00:00</startTime>
+            <locationNames>
+                <locationName>South bank</locationName>            
+            </locationNames>
+            <trainerNames>
+                <trainerName>Wilson Ren</trainerName>
+                <trainerName>Reece Doe</trainerName>
+            </trainerNames>
+            <activityDuration>60</activityDuration>
+            <activityDescription>A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>   -->
+        <!-- <class>
+            <activityName>Yoga</activityName>
+            <startDate>2024-04-30</startDate>
+            <startTime>09:00:00</startTime>
+            <locationNames>
+                <locationName>Chermiside</locationName>
+            </locationNames>
+            <trainerNames>
+                <trainerName>Wilson Ren</trainerName>
+                <trainerName>John Doe</trainerName>
+            </trainerNames>
+            <activityDuration>60</activityDuration>
+            <activityDescription>A holistic practice combining physical postures, breathing exercises, and meditation to enhance overall well-being.</activityDescription>
+        </class>   -->
+        <class>
+            <activityName>Indoor cycling</activityName>
+            <startDate>2024-05-01</startDate>
+            <startTime>11:00:00</startTime>
+            <locationNames>
+                <locationName>Chermside</locationName>
+            </locationNames>
+            <trainerNames>
+                <trainerName>Kyle Xu</trainerName>
+                <trainerName>Reece Doe</trainerName>
+            </trainerNames>
+            <activityDuration>60</activityDuration>
+            <activityDescription>Stationary cycling class for endurance</activityDescription>
+        </class>  
+        <!-- <class>
+            <activityName>HIIT</activityName>
+            <startDate>2024-05-01</startDate>
+            <startTime>13:00:00</startTime>
+            <locationNames>
+                <locationName>South bank</locationName>
+            </locationNames>
+            <trainerNames>
+                <trainerName>Wilson Ren</trainerName>
+                <trainerName>John Doe</trainerName>
+            </trainerNames>
+            <activityDuration>60</activityDuration>
+            <activityDescription>Burn calories</activityDescription>
+        </class>   -->
     </classes>
 </class-upload>
 

@@ -152,34 +152,6 @@ async function findTrainerIdByName(trainerName) {
   return trainers[0].id;
 }
 
-// 更新activities表的函数
-/*
-async function updateActivity(activityId, updates) {
-  const { activityDescription, activityDuration } = updates;
-  const fields = [];
-  const values = [];
-
-  if (activityDescription !== undefined) {
-    fields.push("activity_description = ?");
-    values.push(activityDescription);
-  }
-
-  if (activityDuration !== undefined) {
-    fields.push("activity_duration = ?");
-    values.push(activityDuration);
-  }
-
-  if (fields.length === 0) {
-    throw new Error("No updates provided for the activity");
-  }
-
-  values.push(activityId);
-  const sql = `UPDATE activities SET ${fields.join(", ")} WHERE activity_id = ?`;
-
-  await db.query(sql, values);
-}
-*/
-
 export async function updateById(classId, classInfo) {
   // let activityId;
 
@@ -190,15 +162,6 @@ export async function updateById(classId, classInfo) {
     const activityId = await findActivityIdByName(classInfo.activityName);
     if (!activityId) throw new Error('Activity name not found');
     fieldsToUpdate.activity_id = activityId;
-
-    // 更新activities表
-
-    // await updateActivity(activityId, {
-    //   activityDescription: classInfo.activityDescription,
-    //   activityDuration: classInfo.activityDuration,
-    // });
-
-    // fieldsToUpdate.activity_id = activityId;
   }
 
   // Similar approach for locationName and trainerName
@@ -251,24 +214,27 @@ export async function createOrUpdateActivity(
   activityDuration,
   activityDescription
 ) {
-  // 尝试查找活动
+  // search the activity
   const activityId = await findActivityIdByName(activityName);
   let sql;
 
   if (activityId) {
-    // 如果活动已存在，更新duration和description
+    // if the activity is already existed, update the duration and activity
     sql = `UPDATE activities SET activity_duration = ?, activity_description = ? WHERE activity_id = ?`;
+
     await db.query(sql, [activityDuration, activityDescription, activityId]);
-    return activityId; // 返回现有活动的ID
+
+    return activityId; // return the current activity id
   } else {
-    // 如果活动不存在，创建新活动
+    // if the activity is not existed, insert the new one
     sql = `INSERT INTO activities (activity_name, activity_duration, activity_description) VALUES (?, ?, ?)`;
     const [result] = await db.query(sql, [
       activityName,
       activityDuration,
       activityDescription,
     ]);
-    return result.insertId; // 返回新创建活动的ID
+
+    return result.insertId; // return the newly created activity id
   }
 }
 
@@ -293,11 +259,13 @@ export async function createClass(newClassInfo) {
     INSERT INTO classes (activity_id, datetime, start_at) 
     VALUES (?, ?, ?)
   `;
+
   const [classResult] = await db.query(classSql, [
     activityId,
     startDate,
     startTime,
   ]);
+
   const classId = classResult.insertId;
 
   // 插入新的 class 记录后，获取 location names 和 trainer names
@@ -325,10 +293,6 @@ export async function createClass(newClassInfo) {
   const locationNames = locationRecords.map((l) => l.location_name);
   const trainerNames = trainerRecords.map((t) => t.trainer_name);
 
-  // 现在你需要为这个class创建关联的locations和trainers
-  // 这将涉及向class_locations和class_trainers表中插入数据
-
-  // 例如，你可能会有一个函数来处理这些插入
   await linkClassWithLocationAndTrainer(classId, newClassInfo);
 
   return {
@@ -338,18 +302,15 @@ export async function createClass(newClassInfo) {
     startTime,
     activityDuration,
     activityDescription,
-    locationNames, // 新加的地点名称数组
-    trainerNames, // 新加的教练名称数组
+    locationNames,
+    trainerNames,
   };
 }
 
-// 示例函数，你需要根据自己的逻辑来实现
 async function linkClassWithLocationAndTrainer(
   classId,
   { locationNames, trainerNames }
 ) {
-  // 假设locationNames和trainerNames是数组
-
   for (const locationName of locationNames) {
     const locationId = await findLocationIdByName(locationName);
     if (locationId) {
@@ -368,6 +329,59 @@ async function linkClassWithLocationAndTrainer(
         [classId, trainerId]
       );
     }
+  }
+}
+
+export async function getLocationsByTrainerName(trainerName) {
+  const trainerId = await findTrainerIdByName(trainerName);
+
+  const query = `
+    SELECT 
+      loc.id,
+      loc.location_name
+    FROM 
+      class_trainers ct
+      JOIN class_locations cl ON ct.class_id = cl.class_id
+      JOIN locations loc ON cl.location_id = loc.id
+    WHERE 
+      ct.trainer_id = ?
+    GROUP BY loc.id
+  `;
+
+  try {
+    const [locations] = await db.query(query, [trainerId]);
+    return locations;
+  } catch (error) {
+    console.error('Error fetching locations for trainer:', error);
+    throw error;
+  }
+}
+
+export async function getLocationsForTrainerAndClass(trainerName, classId) {
+  // 首先根据教练名字找到对应的教练ID
+  const trainerId = await findTrainerIdByName(trainerName);
+
+  // 调整查询以选择特定课程和教练的地点
+  const query = `
+    SELECT DISTINCT
+      loc.id,
+      loc.location_name
+    FROM 
+      locations loc
+      JOIN class_locations cl ON loc.id = cl.location_id
+      JOIN classes c ON cl.class_id = c.id
+      JOIN class_trainers ct ON c.id = ct.class_id
+    WHERE 
+      ct.trainer_id = ? AND
+      c.id = ?
+  `;
+
+  try {
+    const [locations] = await db.query(query, [trainerId, classId]);
+    return locations;
+  } catch (error) {
+    console.error('Error fetching locations for class and trainer:', error);
+    throw error;
   }
 }
 
@@ -423,7 +437,6 @@ export async function createClass(newClassInfo) {
 */
 
 export async function deleteClass(classId) {
-  // 构建删除特定class记录的SQL语句
   const deleteSql = `
     DELETE FROM classes 
     WHERE id = ?

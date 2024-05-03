@@ -2,14 +2,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import getStoredAuthKey from "../../utils/getStoredAuthKey";
 import { useDeletePost } from "./useDeletePost";
 import { HiTrash } from "react-icons/hi2";
+import { formatIsoDateToDateTime } from "../../utils/helpers";
 
-function BlogItem({ post, accessRoles = ["admin", "trainer"] }) {
+function BlogItem({ post, accessRoles = ["admin"] }) {
   const authenticationKey = getStoredAuthKey();
   const { id: postId, postAt, postTitle, postContent, userName } = post;
   const { isDeleting, deletePost } = useDeletePost();
   const { user } = useAuth();
   const userIsAuthorized = user && accessRoles.includes(user.role);
-  // console.log(userIsAuthorized);
 
   return (
     <li className="flex flex-col px-2 py-4 md:px-4">
@@ -27,7 +27,9 @@ function BlogItem({ post, accessRoles = ["admin", "trainer"] }) {
           ""
         )}
       </div>
-      <p className="mb-4 text-xs text-zinc-500">{postAt}</p>
+      <p className="mb-4 text-xs text-zinc-400">
+        {formatIsoDateToDateTime(postAt)}
+      </p>
 
       <p className="mb-4 text-sm">{postContent}</p>
       <p className="text-xs text-zinc-500">By: {userName}</p>

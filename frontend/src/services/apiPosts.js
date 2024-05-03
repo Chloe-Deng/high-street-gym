@@ -1,16 +1,22 @@
 import { API_URL } from "./apiURL";
 
 export async function getPosts() {
-  const res = await fetch(API_URL + "/posts", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(API_URL + "/posts", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const { data } = await res.json();
+    if (!res.ok) throw Error("Can not get posts data");
 
-  return data;
+    const { data } = await res.json();
+
+    return data;
+  } catch (err) {
+    console.error("Error fetch posts:", err);
+  }
 }
 
 export async function createPost(newPost) {
@@ -32,13 +38,12 @@ export async function createPost(newPost) {
   }
 }
 
-export async function deletePost({postId, authenticationKey}) {
+export async function deletePost({ postId, authenticationKey }) {
   try {
     const res = await fetch(`${API_URL}/posts/${postId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        // Include any additional headers like authorization if needed
         "X-AUTH-KEY": authenticationKey,
       },
     });

@@ -6,7 +6,7 @@ import { createClass as createClassApi } from "../../services/apiClasses";
 function useCreateClass() {
   const queryClient = useQueryClient();
 
-  const { mutate: createClass, isLoading: isCreating } = useMutation({
+  const { mutate: createClass, isLoading: isCreatingClass } = useMutation({
     mutationFn: createClassApi,
     onSuccess: () => {
       toast.success("New class successfully created");
@@ -19,7 +19,7 @@ function useCreateClass() {
     },
   });
 
-  return { createClass, isCreating };
+  return { createClass, isCreatingClass };
 }
 
 export default useCreateClass;

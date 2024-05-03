@@ -3,27 +3,34 @@ import { useCreatePost } from "./useCreatePost";
 
 import Button from "../../ui/Button";
 import FormRow from "../../ui/FormRow";
-// import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEffect } from "react";
 // import CreateBlogForm from "./CreateBlogForm";
 
 function CreateBlog() {
-  // const { user } = useAuth();
-  // console.log(user);
+  const { user } = useAuth();
   const { isCreating, createPost } = useCreatePost();
   const { register, handleSubmit, reset, formState } = useForm();
 
   const { errors } = formState;
+  const { firstName } = user;
+
+  useEffect(() => {
+    reset({
+      author: firstName,
+    });
+  }, [firstName, reset]);
 
   function onSubmit(data) {
     const postData = {
       postTitle: data.title,
       postContent: data.content,
-      userName: data.author, // 确保后端通过userName查找用户ID
+      userName: data.author,
     };
     // console.log(postData);
     createPost(postData, {
       onSuccess: (data) => {
-        console.log(data);
+        // console.log(data);
         reset();
       },
     });
@@ -34,7 +41,7 @@ function CreateBlog() {
       <h1 className="px-4 text-xl font-bold sm:px-8 sm:text-2xl">New Post</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex w-full flex-col gap-8 rounded-lg p-4 sm:p-8"
+        className="flex w-full flex-col gap-5 rounded-lg p-4 sm:p-8"
       >
         <FormRow label="Title" error={errors?.title?.message}>
           <input
@@ -47,7 +54,6 @@ function CreateBlog() {
             })}
           />
         </FormRow>
-
         <FormRow label="Content" error={errors?.content?.message}>
           <textarea
             className="input-square"
@@ -61,11 +67,13 @@ function CreateBlog() {
           />
         </FormRow>
 
-        <FormRow label="Author" error={errors?.author?.message}>
+        <FormRow error={errors?.author?.message}>
           <input
             className="input-square"
             type="text"
             id="author"
+            name="author"
+            hidden
             // defaultValue={user.firstName}
             disabled={isCreating}
             {...register("author", {
@@ -74,51 +82,7 @@ function CreateBlog() {
           />
         </FormRow>
 
-        {/* <div className="flex flex-col gap-0.5">
-          <label className="text-base" htmlFor="title">
-            Title
-          </label>
-          <input
-            className="input-square"
-            type="text"
-            id="title"
-            disabled={isCreating}
-            {...register("title", {
-              required: "Title field is required",
-            })}
-          />
-          {errors?.title?.message && <Error>{errors.title.message}</Error>}
-        </div> */}
-
-        {/* <div className="flex flex-col gap-0.5">
-          <label htmlFor="content">Content</label>
-          <textarea
-            className="input-square"
-            required
-            rows="10"
-            type="text"
-            id="content"
-            disabled={isCreating}
-            {...register("content", {
-              required: "Content field is required",
-            })}
-          />
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <label htmlFor="author">Author</label>
-          <input
-            className="input-square"
-            type="text"
-            id="author"
-            disabled={isCreating}
-            {...register("author", {
-              required: "Author field is required",
-            })}
-          />
-        </div> */}
-
-        <div className="mt-6 flex justify-center space-x-2">
+        <div className=" flex justify-center space-x-2">
           <Button variation="primary" disabled={isCreating}>
             Create Post
           </Button>

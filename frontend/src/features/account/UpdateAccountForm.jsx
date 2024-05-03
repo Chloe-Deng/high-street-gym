@@ -5,14 +5,18 @@ import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "./useUpdateUser";
 import getStoredAuthKey from "../../utils/getStoredAuthKey";
+import { useAuth } from "../../contexts/AuthContext";
 
-function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
+function UpdateAccountForm({
+  userToUpdate = {},
+  accessRole = ["admin"],
+  onCloseModal,
+}) {
   const { id: editId, ...editValues } = userToUpdate;
-
-  // 将id转换成布尔值来判断是否为编辑状态，如果editId存在，那么为true，反之亦然
   const isEditSession = Boolean(editId);
+  const { user: currentUser } = useAuth();
+  const userIsAuthorized = currentUser && accessRole.includes(currentUser.role);
 
-  // 将defaultValues对象传入useForm中，用于设置当渲染时表单的默认值
   const { register, handleSubmit, formState } = useForm({
     defaultValues: isEditSession ? editValues : {},
   });
@@ -20,9 +24,6 @@ function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
   const { isUpdating, updateUser } = useUpdateUser();
 
   const { errors } = formState;
-  // console.log(errors);
-
-  // const isWorking = isCreating || isEditing;
 
   function onSubmit(data) {
     const {
@@ -31,8 +32,6 @@ function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
       ...updateData
     } = data;
     const authenticationKey = getStoredAuthKey();
-    console.log(editId);
-    console.log(updateData);
 
     if (isEditSession)
       updateUser(
@@ -78,15 +77,19 @@ function UpdateAccountForm({ userToUpdate = {}, onCloseModal }) {
         />
       </FormRow>
 
-      <FormRow label="Role" error={errors?.role?.message}>
-        <input
-          className="input-square"
-          type="role"
-          id="role"
-          disabled={isUpdating}
-          {...register("role")}
-        />
-      </FormRow>
+      {userIsAuthorized ? (
+        <FormRow label="Role" error={errors?.role?.message}>
+          <input
+            className="input-square"
+            type="role"
+            id="role"
+            disabled={isUpdating}
+            {...register("role")}
+          />
+        </FormRow>
+      ) : (
+        ""
+      )}
 
       <FormRow>
         {/* type is an HTML attribute! */}

@@ -1,7 +1,6 @@
 import { API_URL } from "./apiURL";
 
 export async function getBookings(authenticationKey) {
-  // GET from the API /animals
   const res = await fetch(API_URL + "/bookings", {
     method: "GET",
     headers: {
@@ -10,27 +9,33 @@ export async function getBookings(authenticationKey) {
     },
   });
 
+  if (!res.ok) throw new Error("Can not get bookings data!");
+
   const { data } = await res.json();
 
   return data;
 }
 
 export async function fetchBookings(authenticationKey) {
-  const res = await fetch(API_URL + "/bookings/bookings", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-AUTH-KEY": authenticationKey,
-    },
-  });
+  try {
+    const res = await fetch(API_URL + "/bookings/bookings", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-AUTH-KEY": authenticationKey,
+      },
+    });
 
-  if (!res.ok) {
-    throw new Error("Network response was not ok");
+    if (!res.ok) throw new Error("Can not get bookings data!");
+
+    const { data } = await res.json();
+    // console.log(data);
+
+    return data;
+  } catch (error) {
+    console.error("Error during booking fetching:", error);
+    throw error;
   }
-
-  const { data } = await res.json();
-
-  return data;
 }
 
 export async function createBooking(bookingData) {
@@ -48,6 +53,7 @@ export async function createBooking(bookingData) {
     }
 
     const result = await response.json();
+    // console.log(result.data);
     return result;
   } catch (error) {
     console.error("Error during booking creation:", error);

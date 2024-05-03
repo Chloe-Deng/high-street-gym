@@ -38,11 +38,49 @@ export async function getClass(classID) {
     },
   });
 
-  console.log(res);
-
   const { data } = await res.json();
 
   return data;
+}
+
+export async function getLocationsByTrainerName(trainerName) {
+  // console.log("Trainer name:", trainerName);
+  const response = await fetch(
+    `${API_URL}/classes/locations-for-trainer/${encodeURIComponent(trainerName)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No locations found with this trainer");
+  }
+
+  const locations = await response.json();
+  // console.log(locations);
+  return locations;
+}
+
+export async function getLocationsByTrainerNameAndClass(trainerName, classId) {
+  const response = await fetch(
+    `${API_URL}/classes/locations-for-trainer-and-class/${encodeURIComponent(trainerName)}/${encodeURIComponent(classId)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No locations found for this trainer and class");
+  }
+
+  const locations = await response.json();
+  return locations;
 }
 
 export async function createClass({ newClass, authenticationKey }) {

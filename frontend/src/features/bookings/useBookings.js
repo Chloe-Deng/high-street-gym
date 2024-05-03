@@ -14,13 +14,4 @@ export function useBookings() {
   return { isLoading, bookings };
 }
 
-// export function useBookings() {
-//   const { isLoading, data: bookings } = useQuery({
-//     queryKey: ["bookings"],
-//     queryFn: getBookings,
-//   });
-
-//   return { isLoading, bookings };
-// }
-
 export default useBookings;

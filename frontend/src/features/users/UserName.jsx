@@ -9,8 +9,6 @@ import {
 function UserName() {
   const { user, isAuthenticated, logout } = useAuth();
 
-  // console.log(isAuthenticated);
-
   const navigate = useNavigate();
 
   function handleClick() {
@@ -41,9 +39,6 @@ function UserName() {
           </button>
         </div>
       ) : (
-        // <Button variation="small" to={"/login"}>
-        //   Login
-        // </Button>
         ""
       )}
     </div>

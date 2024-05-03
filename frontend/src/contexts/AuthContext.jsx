@@ -7,14 +7,12 @@ import {
 
 const AuthContext = createContext();
 
-// 定义初始状态
 const initialState = {
   isAuthenticated: false,
   user: null,
   authenticationKey: null,
 };
 
-// 定义reducer函数处理action
 function authReducer(state, action) {
   switch (action.type) {
     case "LOGIN":
@@ -23,6 +21,11 @@ function authReducer(state, action) {
         isAuthenticated: true,
         user: action.payload.user,
         authenticationKey: action.payload.authenticationKey,
+      };
+    case "UPDATE_USER":
+      return {
+        ...state,
+        user: { ...state.user, ...action.payload },
       };
     case "LOGOUT":
       return {
@@ -36,7 +39,6 @@ function authReducer(state, action) {
   }
 }
 
-// 创建提供者组件
 function AuthProvider({ children }) {
   const [{ user, isAuthenticated, authenticationKey }, dispatch] = useReducer(
     authReducer,
@@ -80,6 +82,10 @@ function AuthProvider({ children }) {
     }
   };
 
+  const updateUserProfile = (updatedUser) => {
+    dispatch({ type: "UPDATE_USER", payload: updatedUser });
+  };
+
   const logout = async () => {
     try {
       if (user && authenticationKey) {
@@ -96,17 +102,22 @@ function AuthProvider({ children }) {
     }
   };
 
-  // 返回上下文提供者
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, authenticationKey, login, logout }}
+      value={{
+        user,
+        isAuthenticated,
+        authenticationKey,
+        login,
+        logout,
+        updateUserProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// 自定义Hook
 function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined)

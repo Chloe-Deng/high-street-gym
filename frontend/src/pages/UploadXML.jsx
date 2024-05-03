@@ -1,31 +1,20 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Button from "../ui/Button";
 import { useForm } from "react-hook-form";
 import xml2js from "xml2js";
-import toast from "react-hot-toast";
-import { createClass } from "../services/apiClasses";
+
 import getStoredAuthKey from "../utils/getStoredAuthKey";
-import { useCreateUser } from "../features/account/useCreateUser";
+import useCreateUser from "../features/account/useCreateUser";
 import useCreateClass from "../features/classes/useCreateClass";
+import Button from "../ui/Button";
 
 function UploadXML() {
   const { register, handleSubmit } = useForm();
 
-  // const queryClient = useQueryClient();
-
   const authenticationKey = getStoredAuthKey();
 
-  // const { mutate, isLoading: isCreating } = useMutation({
-  //   mutationFn: createClass,
-  //   onSuccess: () => {
-  //     toast.success("New class successfully created");
-  //     queryClient.invalidateQueries({ queryKey: ["classes"] });
-  //   },
-  //   onError: (err) => toast.error(err.message),
-  // });
+  const { createUser, isCreatingUser } = useCreateUser();
+  const { createClass, isCreatingClass } = useCreateClass();
 
-  const { createUser } = useCreateUser();
-  const { createClass, isCreating } = useCreateClass();
+  const isCreating = isCreatingClass || isCreatingUser;
 
   function onSubmit(data) {
     const file = data.xml[0];
@@ -33,74 +22,8 @@ function UploadXML() {
     const reader = new FileReader();
 
     reader.onload = async function (event) {
-      const xmlString = event.target.result; // 获取读取的文件内容
+      const xmlString = event.target.result;
 
-      // 使用 xml2js 解析 XML 字符串为 JavaScript 对象
-      //     const parser = new xml2js.Parser();
-
-      //     parser.parseString(xmlString, function (err, result) {
-      //       if (err) {
-      //         console.error("Error parsing XML:", err);
-      //         return;
-      //       }
-
-      //       // 提取解析后的 JavaScript 对象
-      //       // const classes = result["class-upload"].classes[0].class.map(
-      //       //   (classData) => ({
-      //       //     activityName: classData.activityName[0],
-      //       //     startDate: classData.startDate[0],
-      //       //     startTime: classData.startTime[0],
-      //       //     locationName: classData.locationName[0],
-      //       //     trainerName: classData.trainerName[0],
-      //       //     activityDuration: parseInt(classData.activityDuration[0], 10), // 将字符串转换为整数
-      //       //     activityDescription: classData.activityDescription[0],
-      //       //   }),
-      //       // );
-
-      //       // mutate({ newClass: classes[0], authenticationKey });
-
-      //       // Check if it's class upload or user upload
-      //       if (result["class-upload"]) {
-      //         // Logic for class upload
-      //         const classes = result["class-upload"].classes[0].class.map(
-      //           (classData) => ({
-      //             activityName: classData.activityName[0],
-      //             startDate: classData.startDate[0],
-      //             startTime: classData.startTime[0],
-      //             locationName: classData.locationName[0],
-      //             trainerName: classData.trainerName[0],
-      //             activityDuration: parseInt(classData.activityDuration[0], 10),
-      //             activityDescription: classData.activityDescription[0],
-      //           }),
-      //         );
-
-      //         // Assuming you want to create all classes found in the XML
-      //         classes.forEach((classEntity) => {
-      //           mutate({ newClass: classEntity, authenticationKey });
-      //         });
-      //       } else if (result["user-upload"]) {
-      //         // console.log(result["user-upload"]);
-      //         // Logic for user upload
-      //         const users = result["user-upload"].users[0].user.map((userData) => ({
-      //           email: userData.email[0],
-      //           password: userData.password[0],
-      //           role: userData.role[0],
-      //           firstName: userData.firstName[0],
-      //           lastName: userData.lastName[0],
-      //         }));
-
-      //         console.log(users);
-
-      //         //  Create user found in the XML
-      //         users.forEach((userEntity) => {
-      //           createUser({ user: userEntity, authenticationKey });
-      //         });
-      //       }
-      //     });
-      //   };
-
-      //   reader.readAsText(file);
-      // }
       const parser = new xml2js.Parser({ explicitArray: false });
 
       try {
@@ -122,7 +45,7 @@ function UploadXML() {
             activityDescription: classData.activityDescription,
           }));
 
-          console.log(classes);
+          // console.log(classes);
 
           // Now, mutate can be called for each class
           classes.forEach((classEntity) => {
@@ -141,7 +64,7 @@ function UploadXML() {
             lastName: userData.lastName,
           }));
 
-          console.log(users);
+          // console.log(users);
 
           // Now, create each user
           users.forEach((userEntity) => {

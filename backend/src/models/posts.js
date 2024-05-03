@@ -1,13 +1,6 @@
 import { db } from '../database.js';
 
-// Post model constructor including the user's name
-export function Post(
-  id,
-  postAt,
-  postTitle,
-  postContent,
-  userName // Assuming we are interested in the user's name
-) {
+export function Post(id, postAt, postTitle, postContent, userName) {
   return {
     id,
     postAt,
@@ -52,11 +45,9 @@ export async function getPosts(page = 1, limit = 1) {
 }
 
 export async function createPost(newPost) {
-  // 从postData中解构所需的字段
   const { postTitle, postContent, userName } = newPost;
 
   try {
-    // 首先，根据userName查找用户的ID
     const [users] = await db.query(
       'SELECT id FROM users WHERE first_name = ?',
       [userName]
@@ -66,7 +57,6 @@ export async function createPost(newPost) {
     }
     const userId = users[0].id;
 
-    // 然后，使用找到的userID创建新帖子
     const insertQuery = `
       INSERT INTO posts ( post_title, post_content, post_user_id) 
       VALUES ( ?, ?, ?)
@@ -77,7 +67,6 @@ export async function createPost(newPost) {
       userId,
     ]);
 
-    // 返回新创建的帖子信息
     return {
       id: result.insertId,
       postAt: new Date().toISOString(),

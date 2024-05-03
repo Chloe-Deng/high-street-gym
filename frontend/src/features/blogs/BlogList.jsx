@@ -5,6 +5,11 @@ import { usePosts } from "./usePosts";
 
 function BlogList() {
   const { isLoading, posts } = usePosts();
+  // console.log(posts);
+
+  const sortedPosts = Array.isArray(posts)
+    ? [...posts].sort((a, b) => new Date(b.postAt) - new Date(a.postAt))
+    : [];
 
   if (isLoading || !posts) return <Loader />;
 
@@ -19,7 +24,7 @@ function BlogList() {
       </Button>
 
       <ul className="mt-3 divide-y divide-zinc-200 border-b">
-        {posts.map((post) => (
+        {sortedPosts?.map((post) => (
           <BlogItem post={post} key={post.id} />
         ))}
       </ul>

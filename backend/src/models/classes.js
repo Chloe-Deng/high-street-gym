@@ -49,7 +49,7 @@ export async function getClass(classID) {
     ]);
     if (rows.length > 0) {
       const classResult = rows[0];
-      // 使用 Promise.resolve 返回已解决的 Promise
+
       return Promise.resolve(
         newClass(
           classResult.id,
@@ -63,22 +63,21 @@ export async function getClass(classID) {
         )
       );
     } else {
-      // 使用 Promise.reject 返回被拒绝的 Promise
       return Promise.reject('No class found with the given ID.');
     }
   } catch (error) {
     console.error('Error fetching class by ID:', error);
-    // 直接抛出错误，让调用者决定如何处理
+
     return Promise.reject(error.message);
   }
 }
 
 export async function createClass(newClass) {
-  // 确保新创建的课程对象不包含id属性
+  // ensure the ew class object doesn't contain id
   delete newClass.id;
 
   try {
-    // 插入课程对象到数据库
+    // insert the class object to database
     const [result] = await db.query(
       'INSERT INTO classes (class_name, datetime, start_at, duration, description, location_id, trainer_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [
@@ -92,12 +91,10 @@ export async function createClass(newClass) {
       ]
     );
 
-    // 将数据库生成的id注入到课程对象中并返回
     return { ...newClass, id: result.insertId };
   } catch (error) {
-    // 处理可能发生的任何错误
     console.error('Error creating new class:', error);
-    // 在这里可以决定是否要处理错误或者将其抛出给调用者
+
     throw error;
   }
 }

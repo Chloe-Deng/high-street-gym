@@ -73,9 +73,8 @@ export async function getUserByID(userID, authenticationKey) {
 
     return data.user;
   } catch (error) {
-    // 这里可以处理网络错误或你在上面代码中抛出的错误
     console.error("getUserByID error:", error.message);
-    throw error; // 重新抛出错误，确保调用者知道出现了错误
+    throw error; 
   }
 }
 
@@ -110,8 +109,6 @@ export async function updateUser({ user, authenticationKey }) {
     body: JSON.stringify(updatedFields), // Send the updated fields directly
   });
 
-  console.log(response);
-
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
@@ -139,24 +136,35 @@ export async function updateUser({ user, authenticationKey }) {
 // }
 
 export async function createUser({ user, authenticationKey }) {
-  const response = await fetch(API_URL + "/users", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-AUTH-KEY": authenticationKey,
-    },
-    body: JSON.stringify(user),
-  });
+  try {
+    const response = await fetch(API_URL + "/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-AUTH-KEY": authenticationKey,
+      },
+      body: JSON.stringify(user),
+    });
 
-  if (!response.ok) {
-    const errorData = await response.text();
+    // console.log(response);
 
-    throw new Error(errorData || response.statusText || "Error creating user");
+    if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error(
+          "You are not authorized to perform this action! Please log in as administrator",
+        );
+      } else {
+        throw new Error(response.statusText || "Error creating user");
+      }
+    }
+
+    const postUserResult = await response.json();
+    return postUserResult;
+  } catch (error) {
+    console.error("Error in createUser:", error.message);
+
+    throw error;
   }
-
-  const postUserResult = await response.json();
-
-  return postUserResult;
 }
 
 export async function deleteUser({ userID, authenticationKey }) {
@@ -168,6 +176,11 @@ export async function deleteUser({ userID, authenticationKey }) {
     },
     // body: JSON.stringify({}),
   });
+
+  if (!response.ok) {
+    if (response.status === 403)
+      throw new Error(`You are not authorized to perform this task!`);
+  }
 
   const deleteResult = await response.json();
 

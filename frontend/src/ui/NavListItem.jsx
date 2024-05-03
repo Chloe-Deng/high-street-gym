@@ -14,21 +14,6 @@ function NavListItem({ to, icon: Icon, label }) {
         <Icon className="text-grey-0 h-6 w-6" />
         <span className="text-xs">{label}</span>
       </NavLink>
-
-      {/* <NavLink
-        to={to}
-        className="flex flex-col items-center gap-1 transition-all duration-300"
-        children={({ isActive }) => (
-          <>
-            <Icon
-              className={`h-6 w-6 transition-colors duration-300 ${
-                isActive ? "text-amber-500" : "hover:text-amber-500"
-              }`}
-            />
-            <span className="text-grey-0 text-xs">{label}</span>
-          </>
-        )}
-      /> */}
     </li>
   );
 }

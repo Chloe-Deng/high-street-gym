@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import Button from "../../ui/Button";
 import { useRegisterUser } from "./useRegisterUser";
 import FormRowRound from "../../ui/FormRowRound";
+// import { useNavigate } from "react-router-dom";
 
 function SignUpForm() {
   const { isRegistering, registerUser } = useRegisterUser();
@@ -15,6 +16,7 @@ function SignUpForm() {
       onSuccess: (data) => {
         // console.log(data);
         reset();
+        // navigate("/login");
       },
     });
   }
@@ -32,6 +34,19 @@ function SignUpForm() {
             disabled={isRegistering}
             {...register("firstName", {
               required: "First name field is required",
+              minLength: {
+                value: 2,
+                message: "First name must be at least 2 characters",
+              },
+              maxLength: {
+                value: 50,
+                message: "First name must be less than 50 characters",
+              },
+              pattern: {
+                value: /^[A-Za-z0-9\s'-]+$/,
+                message:
+                  "First name must only contain letters, numbers, spaces, or hyphens",
+              },
             })}
           />
         </FormRowRound>
@@ -44,21 +59,21 @@ function SignUpForm() {
             disabled={isRegistering}
             {...register("lastName", {
               required: "Last name field is required",
+              minLength: {
+                value: 2,
+                message: "Last name must be at least 2 characters.",
+              },
+              maxLength: {
+                value: 50,
+                message: "Last name must be less than 50 characters.",
+              },
+              pattern: {
+                value: /^[A-Za-z]+$/,
+                message: "Last name must only contain letters.",
+              },
             })}
           />
         </FormRowRound>
-
-        {/* <FormRowRound label="Phone number" error={errors?.phoneNumber?.message}>
-          <input
-            className="input grow"
-            type="number"
-            id="phoneNumber"
-            disabled={isRegistering}
-            {...register("phoneNumber", {
-              required: "Phone number field is required",
-            })}
-          />
-        </FormRowRound> */}
 
         <FormRowRound label="Email" error={errors?.email?.message}>
           <input
@@ -68,6 +83,10 @@ function SignUpForm() {
             disabled={isRegistering}
             {...register("email", {
               required: "Email field is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Your email address does not match email format",
+              },
             })}
           />
         </FormRowRound>
@@ -80,6 +99,10 @@ function SignUpForm() {
             disabled={isRegistering}
             {...register("password", {
               required: "Password field is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
             })}
           />
         </FormRowRound>

@@ -8,7 +8,7 @@ const userController = Router();
 
 userController.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
+  // console.log(email, password);
 
   if (!email || !password)
     return res
@@ -17,7 +17,7 @@ userController.post('/login', async (req, res) => {
 
   try {
     const user = await Users.getByEmail(email);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res
         .status(400)
@@ -49,34 +49,6 @@ userController.post('/login', async (req, res) => {
       message: 'An error occurred during login',
     });
   }
-
-  // Users.getByEmail(loginData.email)
-  //   .then((user) => {
-  //     if (bcrypt.compareSync(loginData.password, user.password)) {
-  //       user.authenticationKey = uuid4().toString();
-
-  //       Users.update(user).then((result) => {
-  //         res.status(200).json({
-  //           status: 200,
-  //           message: 'user logged in',
-  //           authenticationKey: user.authenticationKey,
-  //           user: user,
-  //         });
-  //       });
-  //     } else {
-  //       res.status(400).json({
-  //         status: 400,
-  //         message: 'invalid credentials',
-  //       });
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //     res.status(500).json({
-  //       status: 500,
-  //       message: 'login failed',
-  //     });
-  //   });
 });
 
 userController.post('/logout', (req, res) => {
@@ -157,7 +129,7 @@ userController.get('/authentication/:authenticationKey', (req, res) => {
 userController.post('/', auth(['admin']), (req, res) => {
   // Get the user data out of the request
   const userData = req.body;
-  console.log(userData);
+  // console.log(userData);
 
   // TODO: Implement request validation
 
@@ -198,8 +170,6 @@ userController.post('/register', (req, res) => {
   // Get the user data out of the request
   const userData = req.body;
 
-  // TODO: Implement request validation
-
   // hash the password
   userData.password = bcrypt.hashSync(userData.password);
 
@@ -231,65 +201,6 @@ userController.post('/register', (req, res) => {
     });
 });
 
-/*
-userController.patch(
-  '/:id',
-  auth(['admin', 'trainer', 'member']),
-  async (req, res) => {
-    // Get the user data out of the request
-    //
-    // Note - the user data being updated is encapsulated in a user
-    // object to avoid ambiguity between the logged in user's
-    // authentication key and the authentication key of the user
-    // currently being updated.
-    const userID = req.params.id;
-    const userData = req.body.user;
-    console.log(userID, userData);
-
-    // Use ID passed in URL
-    userData.id === userID;
-
-    // TODO: Implement request validation
-
-    // TODO: Enforce that moderators and spotters can only
-    // update their own user records.
-
-    // hash the password if it isn't already hashed
-    if (userData.password && !userData.password.startsWith('$2a')) {
-      userData.password = await bcrypt.hash(userData.password, 10);
-    }
-
-    // Convert the user data into a User model object
-    const user = Users.newUser(
-      userData.id,
-      userData.email,
-      userData.password,
-      userData.role,
-      userData.firstName,
-      userData.lastName,
-      userData.authenticationKey
-    );
-
-    // Use the update model function to update this user in the DB
-    Users.update(user)
-      .then((user) => {
-        res.status(200).json({
-          status: 200,
-          message: 'Updated user',
-          user: user,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        res.status(500).json({
-          status: 500,
-          message: 'Failed to update user',
-        });
-      });
-  }
-);
-*/
-
 userController.patch(
   '/:id',
   auth(['admin', 'trainer', 'member']),
@@ -307,10 +218,8 @@ userController.patch(
       });
     }
 
-    // 将userID添加到userData对象中，确保更新正确的用户记录
     userData.id = userID;
 
-    // 调用更新函数
     try {
       const updatedUser = await Users.updateUser(userData);
       res.status(200).json({
@@ -331,8 +240,6 @@ userController.patch(
 
 userController.delete('/:id', auth(['admin']), (req, res) => {
   const userID = req.params.id;
-
-  // TODO: Implement request validation
 
   Users.deleteByID(userID)
     .then((result) => {
